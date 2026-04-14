@@ -1,0 +1,26 @@
+## [ Visual Studio ]
+# 빌드 결과물 (컴파일된 파일들)
+bin/
+obj/
+out/
+
+# Visual Studio 설정 및 임시 파일
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+## [ .NET Core / ASP.NET Core ]
+# 사용자 비밀 정보 (DB 연결 문자열 등)
+appsettings.Development.json
+usersecrets.json
+
+# 라이브러리 캐시
+.librarymanager/
+.pubxml
+
+## [ OS 관련 ]
+# Windows 임시 파일
+Thumbs.db
+ehthumbs.db
+Desktop.ini
