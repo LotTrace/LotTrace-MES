@@ -1,4 +1,6 @@
-﻿namespace LotTrace_MES.Domain.Entity
+﻿using LotTrace_MES.Domain.Enum;
+
+namespace LotTrace_MES.Domain.Entity
 {
     public class LogHistories
     {
@@ -10,8 +12,8 @@
         public Worker? Worker { get; set; }
 
         // 상태 변경 
-        public string? PrevState { get; set; }
-        public string? NewState { get; set; }
+        public LotState? PrevState { get; set; }
+        public LotState? NewState { get; set; }
 
         // 수량 변경
         public int? OldQty { get; set; }
