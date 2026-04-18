@@ -4,6 +4,6 @@
     {
         // 제품 정보
         public int ProductId { get; set; }
-        public string? ProductName { get; set; }
+        public string? ProductCode { get; set; }
     }
 }
