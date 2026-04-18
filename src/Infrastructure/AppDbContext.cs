@@ -1,4 +1,4 @@
-﻿using LotTrace_MES.Domain.Entity;
+﻿using LotTrace_MES.src.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotTrace_MES.src.Infrastructure
@@ -10,11 +10,11 @@ namespace LotTrace_MES.src.Infrastructure
 
         }
 
-        public DbSet<Domain.Entity.Lot> Lots { get; set; }
-        public DbSet<Domain.Entity.Product> Products { get; set; }
-        public DbSet<Domain.Entity.Worker> Workers { get; set; }
-        public DbSet<Domain.Entity.LogHistories> LogHistories { get; set; }
-        public DbSet<Domain.Entity.Line> Lines { get; set; }
+        public DbSet<Lot> Lots { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Worker> Workers { get; set; }
+        public DbSet<LogHistories> LogHistories { get; set; }
+        public DbSet<Line> Lines { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
