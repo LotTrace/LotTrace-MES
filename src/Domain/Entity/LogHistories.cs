@@ -1,6 +1,6 @@
-﻿using LotTrace_MES.Domain.Enum;
+﻿using LotTrace_MES.src.Domain.Enum;
 
-namespace LotTrace_MES.Domain.Entity
+namespace LotTrace_MES.src.Domain.Entity
 {
     public class LogHistories
     {

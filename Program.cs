@@ -1,4 +1,4 @@
-using LotTrace_MES.Infrastructure;
+using LotTrace_MES.src.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotTrace_MES

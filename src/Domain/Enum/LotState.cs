@@ -1,4 +1,4 @@
-﻿namespace LotTrace_MES.Domain.Enum
+﻿namespace LotTrace_MES.src.Domain.Enum
 {
     public enum LotState
     {

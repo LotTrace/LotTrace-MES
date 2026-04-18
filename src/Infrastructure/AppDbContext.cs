@@ -1,7 +1,7 @@
 ﻿using LotTrace_MES.Domain.Entity;
 using Microsoft.EntityFrameworkCore;
 
-namespace LotTrace_MES.Infrastructure
+namespace LotTrace_MES.src.Infrastructure
 {
     public class AppDbContext : DbContext
     {
