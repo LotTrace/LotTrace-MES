@@ -13,17 +13,17 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
         {
         }
 
-        public async Task<Lot?> GetByBarcodeAsync(string barcode)
+        public async Task<Lot?> GetByBarcodeAsync(string barcode) // 바코드번호로 Lot 조회
         {
             return await _dbSet.FirstOrDefaultAsync(l => l.Barcode == barcode); // FirstOrDefaultAsync는 조건에 맞는 첫 번째 요소를 반환하거나, 그런 요소가 없으면 null을 반환한다.
         }
 
-        public async Task<IEnumerable<Lot>> GetByLineIdAsync(int lineId)
+        public async Task<IEnumerable<Lot>> GetByLineIdAsync(int lineId) // 해당 라인에서 생산된 Lot 조회
         {
             return await _dbSet.Where(l => l.LineId == lineId).ToListAsync();
         }
 
-        public async Task<IEnumerable<Lot>> GetByStateAsync(LotState state)
+        public async Task<IEnumerable<Lot>> GetByStateAsync(LotState state) // 해당 상태에 있는 Lot 조회
         {
             return await _dbSet.Where(l => l.CurrentState == state).ToListAsync();
         }
