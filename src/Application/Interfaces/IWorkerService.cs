@@ -4,7 +4,7 @@ namespace LotTrace_MES.src.Application.Interfaces
 {
     public interface IWorkerService
     {
-        Task<IEnumerable<Worker>> GetAllWorkerAsync(); // 모든 작업자 조회
+        Task<IEnumerable<Worker>> GetAllWorkersAsync(); // 모든 작업자 조회
         Task<IEnumerable<Worker>> GetWorkersByDepartmentAsync(string department); // 부서별 작업자 조회
         Task<Worker?> GetWorkerByNameAsync(string name); // 이름으로 작업자 조회
         Task<Worker?> GetWorkerByEmployeeNumberAsync(int employeeNumber); // 사번으로 작업자 조회
