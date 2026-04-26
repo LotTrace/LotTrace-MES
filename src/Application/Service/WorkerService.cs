@@ -18,7 +18,7 @@ namespace LotTrace_MES.src.Application.Service
         {
             try
             {
-                var existingWorker = await _workerRepository.GetByEmpolyeeNumberAsync(employeeNumber);
+                var existingWorker = await _workerRepository.GetByEmpolyeeNumberAsync(employeeNumber); // 이미 등록되있는 Worker의 경우 null 반환
                 if(existingWorker != null)
                 {
                     _logger.LogWarning("Worker with EmployeeNumber: {EmployeeNumber} already exists.", employeeNumber);
