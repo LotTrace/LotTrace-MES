@@ -2,7 +2,9 @@
 {
     public enum LineState
     {
-        On,
-        Off
+        Idle,
+        Busy,
+        Maintenance,
+        Error
     }
 }
