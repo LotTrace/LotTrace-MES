@@ -1,7 +1,6 @@
 ﻿using LotTrace_MES.Domain.Interfaces;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
-using LotTrace_MES.src.Domain.Interfaces;
 
 namespace LotTrace_MES.src.Application.Service
 {
