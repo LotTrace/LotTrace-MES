@@ -23,7 +23,7 @@ namespace LotTrace_MES.src.Application.Service
             _logger = logger;
         }
 
-        public async Task<bool> ChangeStateAsync(LotState newState, ChangeRequestDTO changeDTO)
+        public async Task<bool> ChangeStateAsync(LotState newState, ChangeRequestLotDTO changeDTO)
         {
             try
             {
@@ -61,7 +61,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<CreateResponseDTO?> CreateLotAsync(CreateRequestDTO createDTO)
+        public async Task<CreateResponseLotDTO?> CreateLotAsync(CreateRequestLotDTO createDTO)
         {
             try
             {
@@ -93,7 +93,7 @@ namespace LotTrace_MES.src.Application.Service
                     return null;
                 }
 
-                var response = new CreateResponseDTO
+                var response = new CreateResponseLotDTO
                 {
                     LotId = newLot.LotId,
                     Barcode = newLot.Barcode,
@@ -111,7 +111,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<bool> MoveNextStepAsync(ChangeRequestDTO changeDTO)
+        public async Task<bool> MoveNextStepAsync(ChangeRequestLotDTO changeDTO)
         {
             try 
             {
