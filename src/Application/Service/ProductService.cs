@@ -1,4 +1,5 @@
 ﻿using LotTrace_MES.Domain.Interfaces;
+using LotTrace_MES.src.Application.DTO.Request.Product;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
 
@@ -14,21 +15,21 @@ namespace LotTrace_MES.src.Application.Service
             _productRepository = productRepository;
             _logger = logger;
         }
-        public async Task<Product?> CreateProductAsync(string productCode, string productName)
+        public async Task<Product?> CreateProductAsync(CreateRequestProductDTO createRequestDTO)
         {
             try
             {
-                var existingProduct = await _productRepository.GetProductCodeAsync(productCode);
+                var existingProduct = await _productRepository.GetProductCodeAsync(createRequestDTO.ProductCode);
                 if (existingProduct != null) // 이미 존재하는 제품 코드인 경우 null 반환
                 {
-                    _logger.LogWarning($"Existing Product Code : {productCode}");
+                    _logger.LogWarning($"Existing Product Code : {createRequestDTO.ProductCode}");
                     return null;
                 }
 
                 var product = new Product
                 {
-                    ProductCode = productCode,
-                    ProductName = productName
+                    ProductCode = createRequestDTO.ProductCode,
+                    ProductName = createRequestDTO.ProductName
                 };
 
                 await _productRepository.AddAsync(product);
@@ -38,7 +39,7 @@ namespace LotTrace_MES.src.Application.Service
 
             } catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error occurred while creating product with code {productCode}");
+                _logger.LogError(ex, $"Error occurred while creating product with code {createRequestDTO.ProductCode}");
                 return null;
             }
         }
@@ -73,7 +74,7 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while retrieving product with code {productCode}");
-                throw;
+                return null;
             }
         }
     }
