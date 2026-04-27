@@ -17,7 +17,7 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
             return await _dbSet.Where(w => w.Department == department).ToListAsync();
         }
 
-        public async Task<Worker?> GetByEmpolyeeNumberAsync(int employeeNumber) // 사번으로 작업자 조회
+        public async Task<Worker?> GetByEmployeeNumberAsync(int employeeNumber) // 사번으로 작업자 조회
         {
             return await _dbSet.FirstOrDefaultAsync(w => w.EmployeeNumber == employeeNumber);
         }
