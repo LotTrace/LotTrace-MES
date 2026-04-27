@@ -12,8 +12,8 @@ namespace LotTrace_MES.src.Domain.Entity
         public Worker? Worker { get; set; }
 
         // 상태 변경 
-        public LotState? PrevState { get; set; } = null;
-        public LotState? NewState { get; set; }
+        public string? PrevState { get; set; } = null;
+        public string? NewState { get; set; }
 
         // 수량 변경
         public int? OldQty { get; set; }

@@ -2,7 +2,7 @@
 {
     public enum LotState
     {
-        Created, // LotId 생산 (입고 전)
+        Created, // LotId 생산
         Wait, // 공정 투입 대기
         Run, // 공정 가동 중
         Hold, // 보류
