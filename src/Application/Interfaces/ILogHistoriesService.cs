@@ -1,5 +1,4 @@
 ﻿using LotTrace_MES.src.Application.DTO.Response.LogHistories;
-using LotTrace_MES.src.Domain.Entity;
 
 namespace LotTrace_MES.src.Application.Interfaces
 {

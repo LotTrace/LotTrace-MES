@@ -72,6 +72,13 @@ namespace LotTrace_MES.src.Application.Service
                     return null;
                 }
 
+                var product = await _productRepository.GetByIdAsync(createDTO.ProductId);
+                if (product == null)
+                {
+                    _logger.LogError($"Product not found: {createDTO.ProductId}");
+                    return null;
+                }
+
                 var newLot = new Lot
                 {
                     Barcode = createDTO.Barcode,
@@ -85,13 +92,7 @@ namespace LotTrace_MES.src.Application.Service
                 await _lotRepository.AddAsync(newLot);
                 await _lotRepository.SaveChangesAsync();
 
-                var product = await _productRepository.GetByIdAsync(newLot.ProductId);
-
-                if (product == null)
-                {
-                    _logger.LogError($"Product not found: {newLot.ProductId}");
-                    return null;
-                }
+                
 
                 var response = new CreateResponseLotDTO
                 {

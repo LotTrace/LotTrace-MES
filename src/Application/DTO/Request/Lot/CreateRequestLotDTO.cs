@@ -1,4 +1,4 @@
-﻿namespace LotTrace_MES.src.Application.DTO.Response.Lot
+﻿namespace LotTrace_MES.src.Application.DTO.Request.Lot
 {
     public class CreateRequestLotDTO
     {
