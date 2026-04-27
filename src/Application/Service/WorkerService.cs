@@ -1,4 +1,5 @@
 ﻿using LotTrace_MES.Domain.Interfaces;
+using LotTrace_MES.src.Application.DTO.Request.Worker;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
 
@@ -14,22 +15,22 @@ namespace LotTrace_MES.src.Application.Service
             _workerRepository = workerRepository;
             _logger = logger;
         }
-        public async Task<Worker?> CreateWorkerAsync(int employeeNumber, string name, string department)
+        public async Task<Worker?> CreateWorkerAsync(CreateRequestWorkerDTO createRequestWorkerDTO)
         {
             try
             {
-                var existingWorker = await _workerRepository.GetByEmpolyeeNumberAsync(employeeNumber); // 이미 등록되있는 Worker의 경우 null 반환
+                var existingWorker = await _workerRepository.GetByEmployeeNumberAsync(createRequestWorkerDTO.EmployeeNumber); // 이미 등록되있는 Worker의 경우 null 반환
                 if(existingWorker != null)
                 {
-                    _logger.LogWarning("Worker with EmployeeNumber: {EmployeeNumber} already exists.", employeeNumber);
+                    _logger.LogWarning("Worker with EmployeeNumber: {EmployeeNumber} already exists.", createRequestWorkerDTO.EmployeeNumber);
                     return null;
                 }
 
                 var worker = new Worker
                 {
-                    EmployeeNumber = employeeNumber,
-                    WorkerName = name,
-                    Department = department
+                    EmployeeNumber = createRequestWorkerDTO.EmployeeNumber,
+                    WorkerName = createRequestWorkerDTO.Name,
+                    Department = createRequestWorkerDTO.Department
                 };
 
                 await _workerRepository.AddAsync(worker);
@@ -39,7 +40,7 @@ namespace LotTrace_MES.src.Application.Service
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating worker with EmployeeNumber: {EmployeeNumber}", employeeNumber);
+                _logger.LogError(ex, "Error creating worker with EmployeeNumber: {EmployeeNumber}", createRequestWorkerDTO.EmployeeNumber);
                 throw;
             }
         }
@@ -62,7 +63,7 @@ namespace LotTrace_MES.src.Application.Service
         {
             try
             {
-                var worker = await _workerRepository.GetByEmpolyeeNumberAsync(employeeNumber);
+                var worker = await _workerRepository.GetByEmployeeNumberAsync(employeeNumber);
                 if (worker == null)
                 {
                     _logger.LogInformation($"Worker with EmployeeNumber: {employeeNumber} not found.");

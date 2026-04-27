@@ -1,4 +1,5 @@
-﻿using LotTrace_MES.src.Domain.Entity;
+﻿using LotTrace_MES.src.Application.DTO.Request.Worker;
+using LotTrace_MES.src.Domain.Entity;
 
 namespace LotTrace_MES.src.Application.Interfaces
 {
@@ -8,6 +9,6 @@ namespace LotTrace_MES.src.Application.Interfaces
         Task<IEnumerable<Worker>> GetWorkersByDepartmentAsync(string department); // 부서별 작업자 조회
         Task<Worker?> GetWorkerByNameAsync(string name); // 이름으로 작업자 조회
         Task<Worker?> GetWorkerByEmployeeNumberAsync(int employeeNumber); // 사번으로 작업자 조회
-        Task<Worker?> CreateWorkerAsync(int employeeNumber, string name, string department); // 작업자 생성
+        Task<Worker?> CreateWorkerAsync(CreateRequestWorkerDTO createRequestWorkerDTO); // 작업자 생성
     }
 }

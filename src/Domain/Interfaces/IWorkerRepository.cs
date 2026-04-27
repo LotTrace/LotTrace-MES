@@ -6,7 +6,7 @@ namespace LotTrace_MES.Domain.Interfaces
     public interface IWorkerRepository : IRepository<Worker>
     {
         Task<Worker?> GetByNameAsync(string name);
-        Task<Worker?> GetByEmpolyeeNumberAsync(int empolyeeNumber);
+        Task<Worker?> GetByEmployeeNumberAsync(int employeeNumber);
         Task<IEnumerable<Worker>> GetByDepartmentAsync(string department);
     }
 }
