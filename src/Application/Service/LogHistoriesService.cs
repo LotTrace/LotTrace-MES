@@ -31,6 +31,9 @@ namespace LotTrace_MES.src.Application.Service
 
                 var logs = await _logHistoriesRepository.GetHistoryByLotIdAsync(lot.LotId);
                 return logs;
+            }catch (KeyNotFoundException)
+            {
+                throw; 
             }
             catch (Exception ex)
             {

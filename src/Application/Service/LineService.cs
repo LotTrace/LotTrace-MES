@@ -2,15 +2,12 @@
 using LotTrace_MES.src.Domain.Entity;
 using LotTrace_MES.src.Domain.Enum;
 using LotTrace_MES.src.Domain.Interfaces;
-using LotTrace_MES.src.Infrastructure.Persistence.Repositories;
-using System.Linq;
 
 namespace LotTrace_MES.src.Application.Service
 {
     public class LineService : ILineService
     {
         private readonly ILineRepository _lineRepository; // DI를 위해 구현체말고 인터페이스를 정의
-        private readonly ILogHistoriesRepository _logHistoriesRepository;
         private readonly ILogger<LineService> _logger; // 어디서 문제가 발생했는지 로그 타입에 LineService를 붙여서 정의
         public LineService(ILineRepository lineRepository, ILogHistoriesRepository logHistoriesRepository, ILogger<LineService> logger)
         {
@@ -71,17 +68,13 @@ namespace LotTrace_MES.src.Application.Service
 
                 if (await _lineRepository.SaveChangesAsync()) // 변경사항 저장
                 {
-                    var log = new LogHistories
-                    {
-                        WorkerId = workerId,
-                        PrevState = prevState.ToString(), // 변경 전 상태
-                        NewState = newState.ToString(), // 변경 후 상태
-                        EventTime = DateTime.Now // 로그 기록 시간
-                    };
-                    await _logHistoriesRepository.AddAsync(log);
-                    await _lineRepository.SaveChangesAsync(); 
-                    
-                    // 추후 트랜잭션 적용
+                    _logger.LogInformation(
+                        "Line state updated: LineId {LineId}, WorkerId {WorkerId}, PrevState {PrevState}, NewState {NewState}, EventTime {EventTime}",
+                        lineId,
+                        workerId,
+                        prevState,
+                        newState,
+                        DateTime.Now);
 
                     return true;
                 }

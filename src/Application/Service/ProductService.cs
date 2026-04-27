@@ -73,7 +73,7 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while retrieving product with code {productCode}");
-                return null;
+                throw;
             }
         }
     }

@@ -43,7 +43,7 @@ namespace LotTrace_MES.src.Application.Service
                         EventTime = DateTime.Now
                     };
                     await _logHistoriesRepository.AddAsync(log);
-                    await _lotRepository.SaveChangesAsync();
+                    await _logHistoriesRepository.SaveChangesAsync();
 
                     return true;
                 }
