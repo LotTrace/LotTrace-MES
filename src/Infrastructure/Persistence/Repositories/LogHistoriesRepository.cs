@@ -20,7 +20,8 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
 
         public async Task<IEnumerable<LogHistories>> GetHistoryByLotIdAsync(int lotId) // LotId 기준으로 로그 조회
         {
-            return await _dbSet.Where(lh => lh.LotId == lotId)
+            return await _dbSet.Include(lh => lh.Worker)
+                                .Where(lh => lh.LotId == lotId)
                                 .OrderByDescending(lh => lh.EventTime)
                                 .ToListAsync();
         }

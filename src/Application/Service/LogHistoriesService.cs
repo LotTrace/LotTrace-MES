@@ -1,4 +1,5 @@
 ﻿using LotTrace_MES.Domain.Interfaces;
+using LotTrace_MES.src.Application.DTO.Response.LogHistories;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
 using LotTrace_MES.src.Domain.Interfaces;
@@ -18,7 +19,7 @@ namespace LotTrace_MES.src.Application.Service
             _logger = logger;
         }
 
-        public async Task<IEnumerable<LogHistories>> GetLogHistoriesByBarcodeAsync(string barcode)
+        public async Task<IEnumerable<ResponseLogDTO>> GetLogHistoriesByBarcodeAsync(string barcode)
         {
             try
             {
@@ -30,8 +31,20 @@ namespace LotTrace_MES.src.Application.Service
                 }
 
                 var logs = await _logHistoriesRepository.GetHistoryByLotIdAsync(lot.LotId);
-                return logs;
-            }catch (KeyNotFoundException)
+
+
+                return logs.Select(log => new ResponseLogDTO
+                {
+                    LogHistoriesId = log.LogHistoriesId,
+                    LotId = log.LotId,
+                    WorkerId = log.WorkerId,
+                    WorkerName = log.Worker?.WorkerName,
+                    PrevState = log.PrevState,
+                    NewState = log.NewState,
+                    EventTime = log.EventTime
+                }).ToList();
+            }
+            catch (KeyNotFoundException)
             {
                 throw; 
             }
@@ -42,12 +55,23 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<LogHistories>> GetLogHistoriesByDateAsync(DateTime start, DateTime end)
+        public async Task<IEnumerable<ResponseLogDTO>> GetLogHistoriesByDateAsync(DateTime start, DateTime end)
         {
             try
             {
                 var logs = await _logHistoriesRepository.GetByDateAsync(start, end);
-                return logs;
+
+
+                return logs.Select(log => new ResponseLogDTO
+                {
+                    LogHistoriesId = log.LogHistoriesId,
+                    LotId = log.LotId,
+                    WorkerId = log.WorkerId,
+                    WorkerName = log.Worker?.WorkerName,
+                    PrevState = log.PrevState,
+                    NewState = log.NewState,
+                    EventTime = log.EventTime
+                }).ToList();
             }
             catch (Exception ex)
             {
@@ -56,12 +80,22 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<LogHistories>> GetLogHistoriesByLotIdAsync(int lotId)
+        public async Task<IEnumerable<ResponseLogDTO>> GetLogHistoriesByLotIdAsync(int lotId)
         {
             try
             {
                 var logs = await _logHistoriesRepository.GetHistoryByLotIdAsync(lotId);
-                return logs;
+
+                return logs.Select(log => new ResponseLogDTO
+                {
+                    LogHistoriesId = log.LogHistoriesId,
+                    LotId = log.LotId,
+                    WorkerId = log.WorkerId,
+                    WorkerName = log.Worker?.WorkerName,
+                    PrevState = log.PrevState,
+                    NewState = log.NewState,
+                    EventTime = log.EventTime
+                }).ToList();
             }
             catch (Exception ex)
             {
