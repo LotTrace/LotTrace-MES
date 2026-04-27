@@ -1,6 +1,6 @@
 ﻿namespace LotTrace_MES.src.Application.DTO.Response.Lot
 {
-    public class CreateRequestDTO
+    public class CreateRequestLotDTO
     {
         public required string Barcode { get; set; }
         public required int ProductId { get; set; }
