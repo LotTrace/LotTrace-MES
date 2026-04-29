@@ -1,4 +1,4 @@
-﻿using LotTrace_MES.Domain.Interfaces;
+﻿using LotTrace_MES.src.Domain.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
 using LotTrace_MES.src.Domain.Enum;
 using LotTrace_MES.src.Infrastructure.Persistence.Repositories.Common;

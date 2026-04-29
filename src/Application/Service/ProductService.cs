@@ -1,4 +1,4 @@
-﻿using LotTrace_MES.Domain.Interfaces;
+﻿using LotTrace_MES.src.Domain.Interfaces;
 using LotTrace_MES.src.Application.DTO.Request.Product;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;

@@ -2,7 +2,7 @@
 using LotTrace_MES.src.Domain.Enum;
 using LotTrace_MES.src.Domain.Interfaces.Common;
 
-namespace LotTrace_MES.Domain.Interfaces
+namespace LotTrace_MES.src.Domain.Interfaces
 {
     public interface ILotRepository : IRepository<Lot>
     {
