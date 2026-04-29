@@ -13,6 +13,7 @@ namespace LotTrace_MES
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddControllers();
             // DB 설정
             builder.Services.AddDbContext<AppDbContext>(opt =>
                 opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -31,9 +32,20 @@ namespace LotTrace_MES
             builder.Services.AddScoped<ILotService, LotService>();
             builder.Services.AddScoped<IProductService, ProductService>();
 
+            // Swagger 설정
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
 
-            app.MapGet("/", () => "Hello World!");
+            if(app.Environment.IsDevelopment()) // 개발 환경에서만 사용 가능하게 설정
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.MapControllers();
+
 
             app.Run();
         }
