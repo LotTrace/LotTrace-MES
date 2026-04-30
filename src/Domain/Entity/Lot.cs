@@ -6,7 +6,7 @@ namespace LotTrace_MES.src.Domain.Entity
     {
         // 기본 정보
         public int LotId { get; set; }
-        public string? Barcode { get; set; }
+        public required string Barcode { get; set; }
         public int ProductId { get; set; }
         public Product? Product { get; set; }
         public int WorkerId { get; set; }
