@@ -1,7 +1,9 @@
-﻿using LotTrace_MES.src.Domain.Interfaces;
-using LotTrace_MES.src.Application.DTO.Request.Worker;
+﻿using LotTrace_MES.src.Application.DTO.Request.Worker;
+using LotTrace_MES.src.Application.DTO.Response.Worker;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
+using LotTrace_MES.src.Domain.Interfaces;
+
 
 namespace LotTrace_MES.src.Application.Service
 {
@@ -15,7 +17,7 @@ namespace LotTrace_MES.src.Application.Service
             _workerRepository = workerRepository;
             _logger = logger;
         }
-        public async Task<Worker?> CreateWorkerAsync(CreateRequestWorkerDTO createRequestWorkerDTO)
+        public async Task<ResponseWorkerDTO?> CreateWorkerAsync(RequestWorkerDTO createRequestWorkerDTO)
         {
             try
             {
@@ -36,7 +38,15 @@ namespace LotTrace_MES.src.Application.Service
                 await _workerRepository.AddAsync(worker);
                 await _workerRepository.SaveChangesAsync();
 
-                return worker;
+                var response = new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                }; 
+                
+                return response;
             }
             catch (Exception ex)
             {
@@ -45,21 +55,74 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<Worker>> GetAllWorkersAsync()
+        public async Task<bool> DeleteWorker(int workerId)
+        {
+            try
+            {
+                var worker = await _workerRepository.GetByIdAsync(workerId);
+                if (worker == null)
+                {
+                    _logger.LogWarning($"Worker with ID {workerId} not found for deletion");
+                    return false;
+                }
+
+                _workerRepository.Delete(worker);
+                await _workerRepository.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting worker with ID {workerId}");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateWorker(int workerId, RequestWorkerDTO RequestDTO)
+        {
+            try
+            {
+                var worker = await _workerRepository.GetByIdAsync(workerId);
+                if (worker == null)
+                {
+                    _logger.LogWarning($"Worker with ID {workerId} not found for update");
+                    return false;
+                }
+                worker.WorkerName = RequestDTO.Name ?? worker.WorkerName;
+                worker.Department = RequestDTO.Department ?? worker.Department;
+
+                _workerRepository.Updated(worker);
+                await _workerRepository.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating worker with ID {workerId}");
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<ResponseWorkerDTO>> GetAllWorkersAsync()
         {
             try
             {
                 var workers = await _workerRepository.GetAllAsync();
-                return workers;
+                return workers.Select(worker => new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                }).ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving all workers.");
-                throw;
+                return Enumerable.Empty<ResponseWorkerDTO>();
             }
         }
 
-        public async Task<Worker?> GetWorkerByEmployeeNumberAsync(int employeeNumber)
+        public async Task<ResponseWorkerDTO?> GetWorkerByEmployeeNumberAsync(int employeeNumber)
         {
             try
             {
@@ -69,7 +132,16 @@ namespace LotTrace_MES.src.Application.Service
                     _logger.LogInformation($"Worker with EmployeeNumber: {employeeNumber} not found.");
                     return null;
                 }
-                return worker;
+
+                var response = new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                };
+
+                return response;
 
             }
             catch (Exception ex)
@@ -79,7 +151,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<Worker?> GetWorkerByNameAsync(string name)
+        public async Task<ResponseWorkerDTO?> GetWorkerByNameAsync(string name)
         {
             try
             {
@@ -89,7 +161,16 @@ namespace LotTrace_MES.src.Application.Service
                     _logger.LogInformation($"Worker with Name: {name} not found.");
                     return null;
                 }
-                return worker;
+
+                var response = new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                };
+
+                return response;
 
             }
             catch (Exception ex)
@@ -99,17 +180,52 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<Worker>> GetWorkersByDepartmentAsync(string department)
+        public async Task<ResponseWorkerDTO?> GetWorkerByIdAsync(int workerId)
         {
             try
             {
+                var worker = await _workerRepository.GetByIdAsync(workerId);
+                if (worker == null)
+                {
+                    _logger.LogInformation($"Worker with ID: {workerId} not found.");
+                    return null;
+                }
+
+                var response = new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                };
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving worker with ID: {WorkerId}", workerId);
+                return null;
+            }
+        }
+
+        public async Task<IEnumerable<ResponseWorkerDTO>> GetWorkersByDepartmentAsync(string department)
+        {
+            try
+            { 
                 var workers = await _workerRepository.GetByDepartmentAsync(department);
-                return workers;
+                return workers.Select(worker => new ResponseWorkerDTO
+                {
+                    WorkerId = worker.WorkerId,
+                    EmployeeNumber = worker.EmployeeNumber,
+                    WorkerName = worker.WorkerName,
+                    Department = worker.Department
+                }).ToList();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving workers in Department: {Department}", department);
-                throw;
+                return Enumerable.Empty<ResponseWorkerDTO>();
             }
         }
     }
