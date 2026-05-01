@@ -16,7 +16,28 @@ namespace LotTrace_MES.src.Application.Service
             _logHistoriesRepository = logHistoriesRepository;
             _logger = logger;
         }
-
+        public async Task<IEnumerable<ResponseLogDTO>> GetAllLogHistoriesAsync()
+        {
+            try
+            {
+                var logs = await _logHistoriesRepository.GetAllAsync();
+                return logs.Select(log => new ResponseLogDTO
+                {
+                    LogHistoriesId = log.LogHistoriesId,
+                    LotId = log.LotId,
+                    WorkerId = log.WorkerId,
+                    WorkerName = log.Worker?.WorkerName,
+                    PrevState = log.PrevState,
+                    NewState = log.NewState,
+                    EventTime = log.EventTime
+                }).ToList();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving all log histories.");
+                return Enumerable.Empty<ResponseLogDTO>();
+            }
+        }
         public async Task<IEnumerable<ResponseLogDTO>> GetLogHistoriesByBarcodeAsync(string barcode)
         {
             try
@@ -44,12 +65,13 @@ namespace LotTrace_MES.src.Application.Service
             }
             catch (KeyNotFoundException)
             {
-                throw; 
+                _logger.LogWarning("No log histories found for barcode {Barcode} because the lot was not found.", barcode);
+                return Enumerable.Empty<ResponseLogDTO>();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving log histories for barcode {Barcode}.", barcode);
-                throw;
+                return Enumerable.Empty<ResponseLogDTO>();
             }
         }
 
@@ -74,7 +96,7 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving log histories between {Start} and {End}.", start, end);
-                throw;
+                return Enumerable.Empty<ResponseLogDTO>();
             }
         }
 
@@ -98,7 +120,7 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving log histories for lot ID {LotId}.", lotId);
-                throw;
+                return Enumerable.Empty<ResponseLogDTO>();
             }
         }
     }
