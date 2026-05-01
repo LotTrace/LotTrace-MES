@@ -1,8 +1,10 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Line;
+using LotTrace_MES.src.Application.DTO.Response.Line;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
 using LotTrace_MES.src.Domain.Enum;
 using LotTrace_MES.src.Domain.Interfaces;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace LotTrace_MES.src.Application.Service
 {
@@ -16,7 +18,26 @@ namespace LotTrace_MES.src.Application.Service
             _logger = logger;
         }
 
-        public async Task<Line?> GetByLineIdAsync(int lineId)
+        public async Task<IEnumerable<ResponseLineDTO>> GetAllLinesAsync()
+        {
+            try
+            {
+                var lines = await _lineRepository.GetAllAsync();
+                return lines.Select(line => new ResponseLineDTO {
+                    LineId = line.LineId,
+                    LineName = line.LineName, 
+                    Description = line.Description, 
+                    CurrentState = line.CurrentState, 
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching all Lines");
+                throw;
+            }
+        }
+
+        public async Task<ResponseLineDTO?> GetByLineIdAsync(int lineId)
         {
             try
             {
@@ -26,7 +47,17 @@ namespace LotTrace_MES.src.Application.Service
                     _logger.LogWarning($"Line not found: ID {lineId}");
                     return null;
                 }
-                 return line;
+
+                var reponse = new ResponseLineDTO
+                {
+                    LineId = line.LineId,
+                    LineName = line.LineName,
+                    Description = line.Description,
+                    CurrentState = line.CurrentState,
+                };
+
+                return reponse;
+
             } catch(Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while fetching Line: ID {lineId}");
@@ -34,7 +65,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<Line>> GetByLineStateAsync(LineState state)
+        public async Task<IEnumerable<ResponseLineDTO>> GetByLineStateAsync(LineState state)
         {
             try
             {
@@ -44,11 +75,73 @@ namespace LotTrace_MES.src.Application.Service
                     _logger.LogWarning($"No lines found with state: {state}");
                 }
 
-                return lines;
+                return lines.Select(line => new ResponseLineDTO
+                {
+                    LineId = line.LineId,
+                    LineName = line.LineName,
+                    Description = line.Description,
+                    CurrentState = line.CurrentState,
+                });
             } catch(Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while fetching Lines with state: {state}");
-                return Enumerable.Empty<Line>();
+                return Enumerable.Empty<ResponseLineDTO>();
+            }
+        }
+
+        public async Task<ResponseLineDTO> CreateLineAsync(CreateRequestLineDTO createRequestLineDTO)
+        {
+            try
+            {
+                var newLine = new Line
+                {
+                    LineName = createRequestLineDTO.LineName,
+                    Description = createRequestLineDTO.Description,
+                    CurrentState = createRequestLineDTO.CurrentState
+                };
+
+                await _lineRepository.AddAsync(newLine);
+                await _lineRepository.SaveChangesAsync();
+
+                var response = new ResponseLineDTO
+                {
+                    LineId = newLine.LineId,
+                    LineName = newLine.LineName,
+                    Description = newLine.Description,
+                    CurrentState = newLine.CurrentState
+                };
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while creating a new Line");
+                throw;
+            }
+        }
+
+        public async Task<bool> DeletedByIdAsync(int lineId)
+        {
+            try
+            {
+
+                var line = await _lineRepository.GetByIdAsync(lineId);
+
+                if (line == null)
+                {
+                    _logger.LogWarning($"Line not found: ID {lineId}");
+                    return false;
+                }
+
+                _lineRepository.Delete(line);
+                await _lineRepository.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting Line: ID {lineId}");
+                return false;
             }
         }
 

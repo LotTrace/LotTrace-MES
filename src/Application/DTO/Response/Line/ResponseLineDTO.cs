@@ -1,10 +1,9 @@
 ﻿using LotTrace_MES.src.Domain.Enum;
 
-namespace LotTrace_MES.src.Domain.Entity
+namespace LotTrace_MES.src.Application.DTO.Response.Line
 {
-    public class Line
+    public class ResponseLineDTO
     {
-        // 라인 정보
         public int LineId { get; set; }
         public required string LineName { get; set; }
         public string? Description { get; set; }
