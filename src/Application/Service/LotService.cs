@@ -34,7 +34,7 @@ namespace LotTrace_MES.src.Application.Service
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt ?? DateTime.Now
-                });
+                }).ToList();
 
                 return response;
             }
@@ -269,7 +269,7 @@ namespace LotTrace_MES.src.Application.Service
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt ?? DateTime.Now
-                });
+                }).ToList();
 
                 return response;
 
@@ -293,7 +293,7 @@ namespace LotTrace_MES.src.Application.Service
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt ?? DateTime.Now
-                });
+                }).ToList();
                 return response;
             }
             catch (Exception ex)

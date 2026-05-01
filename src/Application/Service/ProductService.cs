@@ -1,7 +1,8 @@
-﻿using LotTrace_MES.src.Domain.Interfaces;
-using LotTrace_MES.src.Application.DTO.Request.Product;
+﻿using LotTrace_MES.src.Application.DTO.Request.Product;
+using LotTrace_MES.src.Application.DTO.Response.Product;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
+using LotTrace_MES.src.Domain.Interfaces;
 
 namespace LotTrace_MES.src.Application.Service
 {
@@ -15,7 +16,7 @@ namespace LotTrace_MES.src.Application.Service
             _productRepository = productRepository;
             _logger = logger;
         }
-        public async Task<Product?> CreateProductAsync(CreateRequestProductDTO createRequestDTO)
+        public async Task<ResponseProductDTO?> CreateProductAsync(RequestProductDTO createRequestDTO)
         {
             try
             {
@@ -35,7 +36,13 @@ namespace LotTrace_MES.src.Application.Service
                 await _productRepository.AddAsync(product);
                 await _productRepository.SaveChangesAsync();
 
-                return product;
+                var response = new ResponseProductDTO
+                {
+                    ProductId = product.ProductId,
+                    ProductCode = product.ProductCode ?? "NoCode",
+                    ProductName = product.ProductName ?? "Unknown",
+                };
+                return response;
 
             } catch (Exception ex)
             {
@@ -44,21 +51,81 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        public async Task<bool> UpdateProduct(int productId, RequestProductDTO RequestDTO)
         {
             try
             {
-                return await _productRepository.GetAllAsync();
+                var product = await _productRepository.GetByIdAsync(productId);
+                if (product == null)
+                {
+                    _logger.LogWarning($"Product with ID {productId} not found for update");
+                    return false;
+                }
+                product.ProductName = RequestDTO.ProductName ?? product.ProductName;
+                product.ProductCode = RequestDTO.ProductCode ?? product.ProductCode;
+
+                _productRepository.Updated(product);
+                await _productRepository.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while updating product with ID {productId}");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteProduct(int productId)
+        {
+            try
+            {
+                var product = await _productRepository.GetByIdAsync(productId);
+                if (product == null)
+                {
+                    _logger.LogWarning($"Product with ID {productId} not found for deletion");
+                    return false;
+                }
+
+                _productRepository.Delete(product);
+                await _productRepository.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while deleting product with ID {productId}");
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<ResponseProductDTO>> GetAllProductsAsync()
+        {
+            try
+            {
+                var products = await _productRepository.GetAllAsync();
+
+                if (products == null || !products.Any())
+                {
+                    _logger.LogWarning("No products found");
+                    return Enumerable.Empty<ResponseProductDTO>();
+                }
+
+                return products.Select(product => new ResponseProductDTO
+                {
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName ?? "Unknown", 
+                    ProductCode = product.ProductCode ?? "NoCode"  
+                }).ToList(); 
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error occurred while retrieving all products");
-                return Enumerable.Empty<Product>();
+                return Enumerable.Empty<ResponseProductDTO>();
             }
         }
 
 
-        public async Task<Product?> GetProductByCodeAsync(string productCode)
+        public async Task<ResponseProductDTO?> GetProductByCodeAsync(string productCode)
         {
             try
             {
@@ -69,11 +136,43 @@ namespace LotTrace_MES.src.Application.Service
                     return null;
                 }
 
-                return product;
+                var response = new ResponseProductDTO
+                {
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName ?? "Unknown",
+                    ProductCode = product.ProductCode ?? "NoCode"
+                };
+                return response;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while retrieving product with code {productCode}");
+                return null;
+            }
+        }
+
+        public async Task<ResponseProductDTO?> GetProductByIdAsync(int productId)
+        {
+            try
+            {
+                var product = await _productRepository.GetByIdAsync(productId);
+                if (product == null)
+                {
+                    _logger.LogWarning($"Product with ID {productId} not found");
+                    return null;
+                }
+
+                var response = new ResponseProductDTO
+                {
+                    ProductId = product.ProductId,
+                    ProductName = product.ProductName ?? "Unknown",
+                    ProductCode = product.ProductCode ?? "NoCode"
+                };
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while retrieving product with ID {productId}");
                 return null;
             }
         }

@@ -28,7 +28,7 @@ namespace LotTrace_MES.src.Application.Service
                     LineName = line.LineName, 
                     Description = line.Description, 
                     CurrentState = line.CurrentState, 
-                });
+                }).ToList();
             }
             catch (Exception ex)
             {
@@ -81,7 +81,7 @@ namespace LotTrace_MES.src.Application.Service
                     LineName = line.LineName,
                     Description = line.Description,
                     CurrentState = line.CurrentState,
-                });
+                }).ToList();
             } catch(Exception ex)
             {
                 _logger.LogError(ex, $"Error occurred while fetching Lines with state: {state}");
