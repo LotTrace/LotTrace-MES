@@ -41,7 +41,7 @@ namespace LotTrace_MES.src.Api
             return Ok(worker);
         }
 
-        [HttpGet("employeeNumber/{employeeNumber}")]
+        [HttpGet("employee_number/{employeeNumber}")]
         public async Task<ActionResult<ResponseWorkerDTO>> GetWorkerByEmployeeNumber(int employeeNumber)
         {
             var worker = await _workerService.GetWorkerByEmployeeNumberAsync(employeeNumber);
