@@ -2,7 +2,7 @@
 
 namespace LotTrace_MES.src.Application.DTO.Response.Lot
 {
-    public class CreateResponseLotDTO
+    public class ResponseLotDTO
     {
         public int LotId { get; set; }
         public required string Barcode { get; set; }

@@ -6,7 +6,7 @@ namespace LotTrace_MES.src.Domain.Entity
     {
         // 기본 정보
         public int LotId { get; set; }
-        public string? Barcode { get; set; }
+        public required string Barcode { get; set; }
         public int ProductId { get; set; }
         public Product? Product { get; set; }
         public int WorkerId { get; set; }
@@ -22,7 +22,7 @@ namespace LotTrace_MES.src.Domain.Entity
 
 
         // 시간 추적
-        public DateTime? CreatedAt { get; set; }
+        public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? LastUpdatedAt { get; set; }
 

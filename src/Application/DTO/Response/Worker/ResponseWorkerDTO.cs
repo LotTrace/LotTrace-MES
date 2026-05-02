@@ -1,8 +1,7 @@
-﻿namespace LotTrace_MES.src.Domain.Entity
+﻿namespace LotTrace_MES.src.Application.DTO.Response.Worker
 {
-    public class Worker
+    public class ResponseWorkerDTO
     {
-        // 작업자 정보
         public int WorkerId { get; set; }
         public int EmployeeNumber { get; set; }
         public required string WorkerName { get; set; }

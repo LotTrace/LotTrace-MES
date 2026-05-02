@@ -22,6 +22,91 @@ namespace LotTrace_MES.src.Application.Service
             _logger = logger;
         }
 
+        public async Task<IEnumerable<ResponseLotDTO>> GetLotsAsync()
+        {
+            try
+            {
+                var lots = await _lotRepository.GetAllAsync();
+                var response = lots.Select(lot => new ResponseLotDTO
+                {
+                    LotId = lot.LotId,
+                    Barcode = lot.Barcode,
+                    ProductName = lot.Product?.ProductName ?? "Unknown",
+                    CurrentState = lot.CurrentState,
+                    CreatedAt = lot.CreatedAt
+                }).ToList();
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching all lots.");
+                return Enumerable.Empty<ResponseLotDTO>();
+            }
+        }
+
+        public async Task<ResponseLotDTO?> GetLotByIdAsync(int lotId)
+        {
+            try
+            {
+                var lot = await _lotRepository.GetByIdAsync(lotId);
+                if (lot == null)
+                {
+                    _logger.LogWarning("Lot with ID {lotId} not found.", lotId);
+                    return null;
+                }
+
+                var product = lot.Product;
+
+                if(product == null)
+                {
+                    product = await _productRepository.GetByIdAsync(lot.ProductId);
+                }
+
+                var response = new ResponseLotDTO
+                {
+                    LotId = lot.LotId,
+                    Barcode = lot.Barcode,
+                    ProductName = product?.ProductName ?? "Unknown",
+                    CurrentState = lot.CurrentState,
+                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                };
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching lot with ID {lotId}.", lotId);
+                return null;
+            }
+        }
+
+        public async Task<ResponseLotDTO?> GetLotByBarcodeAsync(string barcode)
+        {
+            try
+            {
+                var lot = await _lotRepository.GetByBarcodeAsync(barcode);
+                if (lot == null)
+                {
+                    _logger.LogWarning("Lot with Barcode {barcode} not found.", barcode);
+                    return null;
+                }
+                var response = new ResponseLotDTO
+                {
+                    LotId = lot.LotId,
+                    Barcode = lot.Barcode,
+                    ProductName = lot.Product?.ProductName ?? "Unknown",
+                    CurrentState = lot.CurrentState,
+                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                };
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching lot with Barcode {barcode}.", barcode);
+                return null;
+            }
+        }
+
         public async Task<bool> ChangeStateAsync(LotState newState, ChangeRequestLotDTO changeDTO)
         {
             try
@@ -60,7 +145,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<CreateResponseLotDTO?> CreateLotAsync(CreateRequestLotDTO createDTO)
+        public async Task<ResponseLotDTO?> CreateLotAsync(CreateRequestLotDTO createDTO)
         {
             try
             {
@@ -91,9 +176,9 @@ namespace LotTrace_MES.src.Application.Service
                 await _lotRepository.AddAsync(newLot);
                 await _lotRepository.SaveChangesAsync();
 
-                
 
-                var response = new CreateResponseLotDTO
+
+                var response = new ResponseLotDTO
                 {
                     LotId = newLot.LotId,
                     Barcode = newLot.Barcode,
@@ -113,7 +198,7 @@ namespace LotTrace_MES.src.Application.Service
 
         public async Task<bool> MoveNextStepAsync(ChangeRequestLotDTO changeDTO)
         {
-            try 
+            try
             {
                 var lot = await _lotRepository.GetByBarcodeAsync(changeDTO.Barcode);
                 if (lot == null)
@@ -158,6 +243,71 @@ namespace LotTrace_MES.src.Application.Service
             {
                 _logger.LogError(ex, $"Error in MoveNextStep for {changeDTO.Barcode}");
                 return false;
+            }
+        }
+
+        public async Task<bool> DeleteLotAsync(int lotId)
+        {
+            try
+            {
+                var lot = await _lotRepository.GetByIdAsync(lotId);
+                if (lot == null)
+                {
+                    _logger.LogWarning("Lot with ID {lotId} not found.", lotId);
+                    return false;
+                }
+                _lotRepository.Delete(lot);
+                return await _lotRepository.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting lot with ID {lotId}.", lotId);
+                return false;
+            }
+        }
+        public async Task<IEnumerable<ResponseLotDTO>> GetLotsByLineIdAsync(int lineId)
+        {
+            try
+            {
+                var lots = await _lotRepository.GetByLineIdAsync(lineId);
+                var response = lots.Select(lot => new ResponseLotDTO
+                {
+                    LotId = lot.LotId,
+                    Barcode = lot.Barcode,
+                    ProductName = lot.Product?.ProductName ?? "Unknown",
+                    CurrentState = lot.CurrentState,
+                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                }).ToList();
+
+                return response;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching lots for line ID {lineId}.", lineId);
+                return Enumerable.Empty<ResponseLotDTO>();
+            }
+        }
+
+        public async Task<IEnumerable<ResponseLotDTO>> GetLotsByStateAsync(LotState state)
+        {
+            try
+            {
+                var lots = await _lotRepository.GetByStateAsync(state);
+                var response = lots.Select(lot => new ResponseLotDTO
+                {
+                    LotId = lot.LotId,
+                    Barcode = lot.Barcode,
+                    ProductName = lot.Product?.ProductName ?? "Unknown",
+                    CurrentState = lot.CurrentState,
+                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                }).ToList();
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error occurred while fetching lots with state {state}.", state);
+                return Enumerable.Empty<ResponseLotDTO>();
             }
         }
     }
