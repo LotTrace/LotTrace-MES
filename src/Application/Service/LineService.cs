@@ -47,7 +47,7 @@ namespace LotTrace_MES.src.Application.Service
                     return null;
                 }
 
-                var reponse = new ResponseLineDTO
+                var response = new ResponseLineDTO
                 {
                     LineId = line.LineId,
                     LineName = line.LineName,
@@ -55,7 +55,7 @@ namespace LotTrace_MES.src.Application.Service
                     CurrentState = line.CurrentState,
                 };
 
-                return reponse;
+                return response;
 
             } catch(Exception ex)
             {
@@ -119,7 +119,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<bool> DeletedByIdAsync(int lineId)
+        public async Task<bool> DeleteByIdAsync(int lineId)
         {
             try
             {

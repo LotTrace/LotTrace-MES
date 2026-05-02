@@ -22,7 +22,7 @@ namespace LotTrace_MES.src.Domain.Entity
 
 
         // 시간 추적
-        public DateTime? CreatedAt { get; set; }
+        public required DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? LastUpdatedAt { get; set; }
 

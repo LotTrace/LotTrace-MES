@@ -21,7 +21,7 @@ namespace LotTrace_MES.src.Api
         public async Task<ActionResult<ResponseLotDTO>> CreateLot([FromBody] CreateRequestLotDTO createRequestLotDTO)
         {
             var result = await _lotService.CreateLotAsync(createRequestLotDTO);
-            if (result == null) return Conflict("Failed to create lot with the provided information."); // 409 응답
+            if (result == null) return BadRequest("Failed to create lot with the provided information."); // 400 응답
 
             return CreatedAtAction(nameof(GetLotsById), new { lotId = result.LotId }, result); // 201 응답 + 조회 경로 제공
         }
@@ -38,7 +38,7 @@ namespace LotTrace_MES.src.Api
         public async Task<ActionResult<ResponseLotDTO>> GetLotsById(int lotId)
         {
             var result = await _lotService.GetLotByIdAsync(lotId);
-            if (result == null) return NotFound($"Not found lots for lot ID {lotId}"); // 400 응답
+            if (result == null) return NotFound($"Not found lots for lot ID {lotId}"); // 404 응답
 
             return Ok(result);
         }

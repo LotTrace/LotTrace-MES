@@ -1,7 +1,6 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Line;
 using LotTrace_MES.src.Application.DTO.Response.Line;
 using LotTrace_MES.src.Application.Interfaces;
-using LotTrace_MES.src.Domain.Entity;
 using LotTrace_MES.src.Domain.Enum;
 using Microsoft.AspNetCore.Mvc;
 
@@ -52,17 +51,17 @@ namespace LotTrace_MES.src.Api
         [HttpDelete("{lineId}")]
         public async Task<ActionResult<bool>> DeleteLine(int lineId)
         {
-            var success = await _lineService.DeletedByIdAsync(lineId);
+            var success = await _lineService.DeleteByIdAsync(lineId);
             if (success == false) return BadRequest($"Failed to delete line with ID {lineId}.");
 
             return Ok(new { message = "Deleted successfully" });
         }
 
         [HttpPut("{lineId}")]
-        public async Task<ActionResult<bool>> UpdateLineStateAsync(UpdateRequestLineDTO updateRequestLineDTO)
+        public async Task<ActionResult<bool>> UpdateLineStateAsync(int lineId, [FromBody] UpdateRequestLineDTO updateRequestLineDTO)
         {
             var success = await _lineService.UpdateLineStateAsync(updateRequestLineDTO);
-            if (success == false) return BadRequest($"Failed to Update line State wit ID {updateRequestLineDTO.LineId}.");
+            if (success == false) return BadRequest($"Failed to Update line State with ID {lineId}.");
 
             return Ok(new { message = "Update State successfully" });
         }

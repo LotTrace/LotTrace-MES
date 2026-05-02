@@ -2,7 +2,6 @@
 using LotTrace_MES.src.Domain.Interfaces;
 using LotTrace_MES.src.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
-using System.Collections;
 
 namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
 {
@@ -13,17 +12,28 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
 
         }
 
-        public async Task<IEnumerable<LogHistories>> GetByDateAsync(DateTime start, DateTime end) // 날짜를 기준으로 로그 기록 조회
+        private IQueryable<LogHistories> DefaultQuery => _dbSet
+            .Include(lh => lh.Worker)
+            .OrderByDescending(lh => lh.EventTime)
+            .AsNoTracking();
+
+        public async Task<IEnumerable<LogHistories>> GetByDateAsync(DateTime start, DateTime end) // 날짜 범위로 로그 조회
         {
-            return await _dbSet.Where(lh => lh.EventTime >= start && lh.EventTime <= end).ToListAsync();
+            return await DefaultQuery
+                .Where(lh => lh.EventTime >= start && lh.EventTime <= end)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<LogHistories>> GetHistoryByLotIdAsync(int lotId) // LotId 기준으로 로그 조회
+        public async Task<IEnumerable<LogHistories>> GetHistoryByLotIdAsync(int lotId) // LotId로 로그 조회
         {
-            return await _dbSet.Include(lh => lh.Worker)
-                                .Where(lh => lh.LotId == lotId)
-                                .OrderByDescending(lh => lh.EventTime)
-                                .ToListAsync();
+            return await DefaultQuery
+                .Where(lh => lh.LotId == lotId)
+                .ToListAsync();
+        }
+
+        public override async Task<IEnumerable<LogHistories>> GetAllAsync()
+        {
+            return await DefaultQuery.ToListAsync();
         }
     }
 }

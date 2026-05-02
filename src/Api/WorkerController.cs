@@ -78,10 +78,16 @@ namespace LotTrace_MES.src.Api
         [HttpDelete("{workerId}")]
         public async Task<ActionResult<bool>> DeleteWorker(int workerId)
         {
+            var worker = await _workerService.GetWorkerByIdAsync(workerId);
+            if(worker == null)
+            {
+                return NotFound($"Worker with ID {workerId} not found.");
+            }
+
             var success = await _workerService.DeleteWorker(workerId);
             if (!success)
             {
-                return BadRequest($"Failed to delete worker with ID {workerId}.");
+                return StatusCode(500, $"Failed to delete worker with ID {workerId}.");
             }
             return Ok(new { message = "Deleted successfully" });
         }

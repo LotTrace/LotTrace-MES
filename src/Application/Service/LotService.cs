@@ -33,7 +33,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 }).ToList();
 
                 return response;
@@ -55,11 +55,19 @@ namespace LotTrace_MES.src.Application.Service
                     _logger.LogWarning("Lot with ID {lotId} not found.", lotId);
                     return null;
                 }
+
+                var product = lot.Product;
+
+                if(product == null)
+                {
+                    product = await _productRepository.GetByIdAsync(lot.ProductId);
+                }
+
                 var response = new ResponseLotDTO
                 {
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
-                    ProductName = lot.Product?.ProductName ?? "Unknown",
+                    ProductName = product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt ?? DateTime.Now
                 };
