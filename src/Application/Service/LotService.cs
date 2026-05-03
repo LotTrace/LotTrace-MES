@@ -201,7 +201,6 @@ namespace LotTrace_MES.src.Application.Service
             try
             {
                 var lot = await _lotRepository.GetByBarcodeAsync(changeDTO.Barcode);
-                Console.WriteLine(lot.Barcode, lot.WorkerId);
                 if (lot == null)
                 {
                     _logger.LogWarning("Lot with barcode {Barcode} not found.", changeDTO.Barcode);
@@ -210,7 +209,6 @@ namespace LotTrace_MES.src.Application.Service
 
                 LotState prevState = lot.CurrentState;
                 LotState newState;
-                Console.WriteLine(prevState);
                 switch (prevState)
                 {
                     case LotState.Created: newState = LotState.Wait; break;

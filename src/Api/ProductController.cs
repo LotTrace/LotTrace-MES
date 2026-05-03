@@ -58,7 +58,6 @@ namespace LotTrace_MES.src.Api
             {
                 return BadRequest();
             }
-
             return CreatedAtRoute("GetProductById", new { productId = product.ProductId }, product); 
         }
 

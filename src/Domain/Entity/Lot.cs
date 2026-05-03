@@ -23,6 +23,8 @@ namespace LotTrace_MES.src.Domain.Entity
 
         // 시간 추적
         public required DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public DateTime? LastUpdatedAt { get; set; }
 
         // 계보 관리
         public int? ParentLotId { get; set; }
