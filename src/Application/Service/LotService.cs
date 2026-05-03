@@ -69,7 +69,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 };
                 return response;
             }
@@ -96,7 +96,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 };
                 return response;
             }
@@ -184,7 +184,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = newLot.Barcode,
                     ProductName = product?.ProductName ?? string.Empty,
                     CurrentState = newLot.CurrentState,
-                    CreatedAt = newLot.CreatedAt ?? DateTime.Now
+                    CreatedAt = newLot.CreatedAt
                 };
 
                 return response;
@@ -200,7 +200,7 @@ namespace LotTrace_MES.src.Application.Service
         {
             try
             {
-                var lot = await _lotRepository.GetByBarcodeAsync(changeDTO.Barcode);
+                var lot = await _lotRepository.GetByBarcodeForUpdateAsync(changeDTO.Barcode);
                 if (lot == null)
                 {
                     _logger.LogWarning("Lot with barcode {Barcode} not found.", changeDTO.Barcode);
@@ -209,7 +209,6 @@ namespace LotTrace_MES.src.Application.Service
 
                 LotState prevState = lot.CurrentState;
                 LotState newState;
-
                 switch (prevState)
                 {
                     case LotState.Created: newState = LotState.Wait; break;
@@ -276,7 +275,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 }).ToList();
 
                 return response;
@@ -300,7 +299,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 }).ToList();
                 return response;
             }

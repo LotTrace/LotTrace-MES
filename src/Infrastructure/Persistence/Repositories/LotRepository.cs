@@ -9,8 +9,10 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
     public class LotRepository : GenericRepository<Lot>, ILotRepository // 상속을 받았기 떄문에 _context를 다시 정의할 필요가 없다.
     {
         private IQueryable<Lot> LotSet => _context.Lots
-            .Include(l => l.Product)
-            .AsNoTracking();
+            .Include(l => l.Product);
+
+        private IQueryable<Lot> TrackingLotSet => _context.Lots
+            .Include(l => l.Product);
 
         public LotRepository(AppDbContext context) : base(context) // 상속받은 부모 파일에 context를 넘겨준다.
         {
@@ -30,6 +32,16 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
         public async Task<IEnumerable<Lot>> GetByStateAsync(LotState state) // 해당 상태에 있는 Lot 조회
         {
             return await LotSet.Where(l => l.CurrentState == state).ToListAsync();
+        }
+
+        public override async Task<IEnumerable<Lot>> GetAllAsync()
+        {
+            return await LotSet.ToListAsync();
+        }
+
+        public async Task<Lot?> GetByBarcodeForUpdateAsync(string barcode)
+        {
+            return await TrackingLotSet.FirstOrDefaultAsync(l => l.Barcode == barcode);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace LotTrace_MES.src.Api
             return Ok(product);
         }
 
-        [HttpGet("{productId}")]
+        [HttpGet("{productId}", Name = "GetProductById")]
         public async Task<ActionResult<ResponseProductDTO?>> GetProductByIdAsync(int productId)
         {
             var product = await _productService.GetProductByIdAsync(productId);
@@ -54,12 +54,11 @@ namespace LotTrace_MES.src.Api
         public async Task<ActionResult<ResponseProductDTO>> CreateProductAsync([FromBody] RequestProductDTO createRequestDTO)
         {
             var product = await _productService.CreateProductAsync(createRequestDTO);
-            if(product == null)
+            if (product == null)
             {
                 return BadRequest();
             }
-
-            return CreatedAtAction(nameof(GetProductByCodeAsync), new { productCode = product.ProductCode }, product); 
+            return CreatedAtRoute("GetProductById", new { productId = product.ProductId }, product); 
         }
 
         [HttpDelete("{productId}")]
