@@ -200,7 +200,7 @@ namespace LotTrace_MES.src.Application.Service
         {
             try
             {
-                var lot = await _lotRepository.GetByBarcodeAsync(changeDTO.Barcode);
+                var lot = await _lotRepository.GetByBarcodeForUpdateAsync(changeDTO.Barcode);
                 if (lot == null)
                 {
                     _logger.LogWarning("Lot with barcode {Barcode} not found.", changeDTO.Barcode);
@@ -241,15 +241,6 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error in MoveNextStep for {changeDTO.Barcode}");
-
-                Console.WriteLine("======= [에러 발생 상세 정보] =======");
-                Console.WriteLine($"메시지: {ex.Message}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"상세 이유: {ex.InnerException.Message}");
-                }
-                Console.WriteLine("===================================");
-
                 return false;
             }
         }

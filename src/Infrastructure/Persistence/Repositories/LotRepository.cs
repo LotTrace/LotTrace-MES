@@ -11,6 +11,9 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
         private IQueryable<Lot> LotSet => _context.Lots
             .Include(l => l.Product);
 
+        private IQueryable<Lot> TrackingLotSet => _context.Lots
+            .Include(l => l.Product);
+
         public LotRepository(AppDbContext context) : base(context) // 상속받은 부모 파일에 context를 넘겨준다.
         {
         }
@@ -34,6 +37,11 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
         public override async Task<IEnumerable<Lot>> GetAllAsync()
         {
             return await LotSet.ToListAsync();
+        }
+
+        public async Task<Lot?> GetByBarcodeForUpdateAsync(string barcode)
+        {
+            return await TrackingLotSet.FirstOrDefaultAsync(l => l.Barcode == barcode);
         }
     }
 }
