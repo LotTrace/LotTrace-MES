@@ -55,6 +55,7 @@ namespace LotTrace_MES.src.Api
         [HttpPost("next")]
         public async Task<ActionResult<bool>> MoveNextStep([FromBody] ChangeRequestLotDTO changeRequestLotDTO)
         {
+            Console.WriteLine(changeRequestLotDTO.Barcode, changeRequestLotDTO.WorkerId);
             var success = await _lotService.MoveNextStepAsync(changeRequestLotDTO);
             if (success == false) return BadRequest();
 

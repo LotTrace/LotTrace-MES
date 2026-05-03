@@ -69,7 +69,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 };
                 return response;
             }
@@ -96,7 +96,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 };
                 return response;
             }
@@ -184,7 +184,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = newLot.Barcode,
                     ProductName = product?.ProductName ?? string.Empty,
                     CurrentState = newLot.CurrentState,
-                    CreatedAt = newLot.CreatedAt ?? DateTime.Now
+                    CreatedAt = newLot.CreatedAt
                 };
 
                 return response;
@@ -201,6 +201,7 @@ namespace LotTrace_MES.src.Application.Service
             try
             {
                 var lot = await _lotRepository.GetByBarcodeAsync(changeDTO.Barcode);
+                Console.WriteLine(lot.Barcode, lot.WorkerId);
                 if (lot == null)
                 {
                     _logger.LogWarning("Lot with barcode {Barcode} not found.", changeDTO.Barcode);
@@ -209,7 +210,7 @@ namespace LotTrace_MES.src.Application.Service
 
                 LotState prevState = lot.CurrentState;
                 LotState newState;
-
+                Console.WriteLine(prevState);
                 switch (prevState)
                 {
                     case LotState.Created: newState = LotState.Wait; break;
@@ -242,6 +243,15 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error in MoveNextStep for {changeDTO.Barcode}");
+
+                Console.WriteLine("======= [에러 발생 상세 정보] =======");
+                Console.WriteLine($"메시지: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"상세 이유: {ex.InnerException.Message}");
+                }
+                Console.WriteLine("===================================");
+
                 return false;
             }
         }
@@ -276,7 +286,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 }).ToList();
 
                 return response;
@@ -300,7 +310,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt ?? DateTime.Now
+                    CreatedAt = lot.CreatedAt
                 }).ToList();
                 return response;
             }
