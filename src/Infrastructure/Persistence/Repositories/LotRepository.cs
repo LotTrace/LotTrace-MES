@@ -43,5 +43,10 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
         {
             return await TrackingLotSet.FirstOrDefaultAsync(l => l.Barcode == barcode);
         }
+
+        public async Task<bool> CheckStateTransitionAsync(LotState fromState, LotState toState)
+        {
+            return await _context.LotStateTransitions.AnyAsync(t => t.FromState == fromState && t.ToState == toState && t.IsAllowed);
+        }
     }
 }

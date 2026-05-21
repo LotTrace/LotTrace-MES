@@ -107,7 +107,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<bool> ChangeStateAsync(LotState newState, ChangeRequestLotDTO changeDTO)
+        public async Task<bool> ChangeStateAsync(LotState nextState, ChangeRequestLotDTO changeDTO)
         {
             try
             {
@@ -118,7 +118,7 @@ namespace LotTrace_MES.src.Application.Service
                     return false;
                 }
                 LotState prevState = lot.CurrentState;
-                lot.CurrentState = newState;
+                lot.CurrentState = nextState;
 
                 if (await _lotRepository.SaveChangesAsync())
                 {
@@ -126,7 +126,7 @@ namespace LotTrace_MES.src.Application.Service
                     {
                         LotId = lot.LotId,
                         PrevState = prevState.ToString(),
-                        NewState = newState.ToString(),
+                        NextState = nextState.ToString(),
                         WorkerId = changeDTO.WorkerId,
                         EventTime = DateTime.Now
                     };
@@ -208,19 +208,19 @@ namespace LotTrace_MES.src.Application.Service
                 }
 
                 LotState prevState = lot.CurrentState;
-                LotState newState;
-                switch (prevState)
+                LotState nextState = changeDTO.TargetState;
+
+                bool isValidTransition = await _lotRepository.CheckStateTransitionAsync(prevState, nextState);
+
+                if (!isValidTransition)
                 {
-                    case LotState.Created: newState = LotState.Wait; break;
-                    case LotState.Wait: newState = LotState.Run; break;
-                    case LotState.Run: newState = LotState.Complete; break;
-                    case LotState.Hold: newState = LotState.Wait; break;
-                    default:
-                        _logger.LogWarning($"Lot {changeDTO.Barcode} cannot move from {prevState}.");
-                        return false;
+                    _logger.LogWarning("Invalid state transition from {PrevState} to {NextState} for lot with barcode {Barcode}.", prevState, nextState, changeDTO.Barcode);
+                    return false;
                 }
 
-                lot.CurrentState = newState;
+                lot.CurrentState = nextState;
+                lot.WorkerId = changeDTO.WorkerId;
+                lot.LastUpdatedAt = DateTime.Now;
 
                 if (await _lotRepository.SaveChangesAsync())
                 {
@@ -229,7 +229,7 @@ namespace LotTrace_MES.src.Application.Service
                         LotId = lot.LotId,
                         WorkerId = changeDTO.WorkerId,
                         PrevState = prevState.ToString(),
-                        NewState = newState.ToString(),
+                        NextState = nextState.ToString(),
                         EventTime = DateTime.Now,
                     };
                     await _logHistoriesRepository.AddAsync(log);

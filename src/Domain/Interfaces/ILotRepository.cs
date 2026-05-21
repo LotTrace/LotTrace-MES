@@ -10,5 +10,6 @@ namespace LotTrace_MES.src.Domain.Interfaces
         Task<IEnumerable<Lot>> GetByStateAsync(LotState state);
         Task<IEnumerable<Lot>> GetByLineIdAsync(int lineId);
         Task<Lot?> GetByBarcodeForUpdateAsync(string barcode);
+        Task<bool> CheckStateTransitionAsync(LotState fromState, LotState toState);
     }
 }

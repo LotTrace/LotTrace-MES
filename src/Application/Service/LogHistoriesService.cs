@@ -28,7 +28,7 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = log.WorkerId,
                     WorkerName = log.Worker?.WorkerName,
                     PrevState = log.PrevState,
-                    NewState = log.NewState,
+                    NewState = log.NextState,
                     EventTime = log.EventTime
                 }).ToList();
             }
@@ -59,7 +59,7 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = log.WorkerId,
                     WorkerName = log.Worker?.WorkerName,
                     PrevState = log.PrevState,
-                    NewState = log.NewState,
+                    NewState = log.NextState,
                     EventTime = log.EventTime
                 }).ToList();
             }
@@ -89,7 +89,7 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = log.WorkerId,
                     WorkerName = log.Worker?.WorkerName,
                     PrevState = log.PrevState,
-                    NewState = log.NewState,
+                    NewState = log.NextState,
                     EventTime = log.EventTime
                 }).ToList();
             }
@@ -113,7 +113,7 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = log.WorkerId,
                     WorkerName = log.Worker?.WorkerName,
                     PrevState = log.PrevState,
-                    NewState = log.NewState,
+                    NewState = log.NextState,
                     EventTime = log.EventTime
                 }).ToList();
             }
