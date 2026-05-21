@@ -196,7 +196,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<bool> MoveNextStepAsync(ChangeRequestLotDTO changeDTO)
+        public async Task<bool> TransitionStateAsync(ChangeRequestLotDTO changeDTO)
         {
             try
             {
