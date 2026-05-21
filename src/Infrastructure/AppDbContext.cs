@@ -15,6 +15,7 @@ namespace LotTrace_MES.src.Infrastructure
         public DbSet<Worker> Workers { get; set; }
         public DbSet<LogHistories> LogHistories { get; set; }
         public DbSet<Line> Lines { get; set; }
+        public DbSet<LotStateTransition> LotStateTransitions { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

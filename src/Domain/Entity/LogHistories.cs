@@ -13,7 +13,7 @@ namespace LotTrace_MES.src.Domain.Entity
 
         // 상태 변경 
         public string? PrevState { get; set; } = null;
-        public string? NewState { get; set; }
+        public string? NextState { get; set; }
 
         // 수량 변경
         public int? OldQty { get; set; }
