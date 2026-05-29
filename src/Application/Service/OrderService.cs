@@ -21,7 +21,31 @@ namespace LotTrace_MES.src.Application.Service
 
         public async Task<bool> CompleteOrderAsync(int orderId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var order = await _orderRepository.GetByIdAsync(orderId);
+                if (order == null)
+                {
+                    _logger.LogWarning($"Order with ID {orderId} not found.");
+                    return false;
+                }
+
+                if (order.OrderStatus != "InProgress")
+                {
+                    _logger.LogWarning($"Order with ID {orderId} cannot be completed because it is in '{order.OrderStatus}' status.");
+                    return false;
+                }
+
+                order.OrderStatus = "Completed";
+                await _orderRepository.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error occurred while completing order ID {orderId}");
+                return false;
+            }
         }
 
         public async Task<ResponseOrderDTO> CreateOrderAsync(RequestOrderDTO requestOrderDTO)
