@@ -1,4 +1,5 @@
-﻿using LotTrace_MES.src.Domain.Entity;
+﻿using LotTrace_MES.src.Application.DTO.Response.Material;
+using LotTrace_MES.src.Domain.Entity;
 
 namespace LotTrace_MES.src.Domain.Services
 {
@@ -10,9 +11,9 @@ namespace LotTrace_MES.src.Domain.Services
 
         Task<bool> AdjustStockAsync(int materialId, int newStockQty);
 
-        Task<IEnumerable<Material>> GetDangerousStockMaterialsAsync();
+        Task<IEnumerable<ResponseMaterialDTO>> GetDangerousStockMaterialsAsync();
 
-        Task<IEnumerable<Material>> GetAllMaterialsAsync();
-        Task<Material?> GetMaterialByIdAsync(int materialId);
+        Task<IEnumerable<ResponseMaterialDTO>> GetAllMaterialsAsync();
+        Task<ResponseMaterialDTO> GetMaterialByIdAsync(int materialId);
     }
 }
