@@ -8,5 +8,7 @@ namespace LotTrace_MES.src.Application.Interfaces
         Task<bool> StartOrderAsync(int orderId);
         Task<bool> CompleteOrderAsync(int orderId);
         Task<bool> UpdateProductQtyAsync(int orderId, int newQuantity);
+        Task<IEnumerable<Order>> GetAllOrdersAsync();
+        Task<Order?> GetOrderDetailsAsync(int orderId);
     }
 }
