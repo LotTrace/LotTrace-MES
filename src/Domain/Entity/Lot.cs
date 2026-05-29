@@ -11,6 +11,10 @@ namespace LotTrace_MES.src.Domain.Entity
         public Product? Product { get; set; }
         public int WorkerId { get; set; }
         public Worker? Worker { get; set; }
+        public int OrderId { get; set; }
+        public Order? Order { get; set; }
+        public int MaterialId { get; set; }
+        public Material? Material { get; set; }
 
         // 상태 및 위치 
         public LotState CurrentState { get; set; }
