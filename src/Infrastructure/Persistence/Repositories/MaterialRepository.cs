@@ -1,10 +1,11 @@
 ﻿using LotTrace_MES.src.Domain.Entity;
+using LotTrace_MES.src.Domain.Interfaces;
 using LotTrace_MES.src.Infrastructure.Persistence.Repositories.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
 {
-    public class MaterialRepository : GenericRepository<Material>
+    public class MaterialRepository : GenericRepository<Material>, IMaterialRepository
     {
         public MaterialRepository(AppDbContext context) : base(context)
         {

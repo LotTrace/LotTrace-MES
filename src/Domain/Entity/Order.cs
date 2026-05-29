@@ -4,7 +4,7 @@
     {
         public int OrderId { get; set; }
         public int ProductId { get; set; }
-        public Product? Product { get; set; }
+        public required Product Product { get; set; }
 
         public string OrderStatus { get; set; } = "Pending";
         public int PlanQuantity { get; set; }
