@@ -12,13 +12,17 @@ namespace LotTrace_MES.src.Application.Service
         private readonly ILotRepository _lotRepository;
         private readonly ILogHistoriesRepository _logHistoriesRepository;
         private readonly IProductRepository _productRepository;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IMaterialRepository _materialRepository;
         private readonly ILogger<LotService> _logger;
 
-        public LotService(ILotRepository lotRepository, ILogHistoriesRepository logHistoriesRepository, IProductRepository productRepository, ILogger<LotService> logger)
+        public LotService(ILotRepository lotRepository, ILogHistoriesRepository logHistoriesRepository, IProductRepository productRepository, IOrderRepository OrderRepository, IMaterialRepository materialRepository, ILogger<LotService> logger)
         {
             _lotRepository = lotRepository;
             _logHistoriesRepository = logHistoriesRepository;
             _productRepository = productRepository;
+            _orderRepository = OrderRepository;
+            _materialRepository = materialRepository;
             _logger = logger;
         }
 
@@ -32,6 +36,8 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
+                    OrderId = lot.OrderId,                              
+                    MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
                 }).ToList();
@@ -63,11 +69,19 @@ namespace LotTrace_MES.src.Application.Service
                     product = await _productRepository.GetByIdAsync(lot.ProductId);
                 }
 
+                var material = lot.Material;
+                if (material == null)
+                {
+                    material = await _materialRepository.GetByIdAsync(lot.MaterialId);
+                }
+
                 var response = new ResponseLotDTO
                 {
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = product?.ProductName ?? "Unknown",
+                    OrderId = lot.OrderId,                            
+                    MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
                 };
@@ -95,6 +109,8 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
+                    OrderId = lot.OrderId,                          
+                    MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
                 };
@@ -163,11 +179,36 @@ namespace LotTrace_MES.src.Application.Service
                     return null;
                 }
 
+                var material = await _materialRepository.GetByIdAsync(createDTO.MaterialId);
+                if (material == null)
+                {
+                    _logger.LogError($"Material not found: {createDTO.MaterialId}");
+                    return null;
+                }
+                if (material.Stock < createDTO.StartQty)
+                {
+                    _logger.LogWarning($"Material shortage. Available: {material.Stock}, Requested: {createDTO.StartQty}");
+                    throw new InvalidOperationException("창고에 원자재 재고가 부족하여 Lot을 발행할 수 없습니다.");
+                }
+                material.Stock -= createDTO.StartQty;
+
+                var order = await _orderRepository.GetByIdAsync(createDTO.OrderId);
+                if (order == null)
+                {
+                    _logger.LogError($"Production Order not found: {createDTO.OrderId}");
+                    return null;
+                }
+                order.ProducedQuantity += createDTO.StartQty;
+
                 var newLot = new Lot
                 {
                     Barcode = createDTO.Barcode,
                     ProductId = createDTO.ProductId,
                     WorkerId = createDTO.WorkerId,
+                    OrderId = createDTO.OrderId,
+                    MaterialId = createDTO.MaterialId,
+                    StartQty = createDTO.StartQty,
+                    Quantity = createDTO.StartQty,
                     LineId = createDTO.LineId,
                     CurrentState = LotState.Created,
                     CreatedAt = DateTime.Now
@@ -175,26 +216,19 @@ namespace LotTrace_MES.src.Application.Service
 
                 await _lotRepository.AddAsync(newLot);
                 await _lotRepository.SaveChangesAsync();
+                await _materialRepository.SaveChangesAsync();
+                await _orderRepository.SaveChangesAsync();
 
-
-
-                var response = new ResponseLotDTO
-                {
-                    LotId = newLot.LotId,
-                    Barcode = newLot.Barcode,
-                    ProductName = product?.ProductName ?? string.Empty,
-                    CurrentState = newLot.CurrentState,
-                    CreatedAt = newLot.CreatedAt
-                };
-
-                return response;
+                _logger.LogInformation($"[MES Chain Success] Lot {createDTO.Barcode} created. Material {material.Name} deducted. Order {createDTO.OrderId} progress updated.");
+                return await GetLotByBarcodeAsync(newLot.Barcode);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating lot with barcode {Barcode}.", createDTO.Barcode);
-                return null;
+                throw;
             }
         }
+
 
         public async Task<bool> TransitionStateAsync(ChangeRequestLotDTO changeDTO)
         {
@@ -274,6 +308,8 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
+                    OrderId = lot.OrderId,                           
+                    MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
                 }).ToList();
@@ -298,6 +334,8 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
+                    OrderId = lot.OrderId,                             
+                    MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
                 }).ToList();
