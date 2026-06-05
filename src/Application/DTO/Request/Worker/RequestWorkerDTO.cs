@@ -2,8 +2,9 @@
 {
     public class RequestWorkerDTO
     {
-        public int EmployeeNumber { get; set; }
+        public required string EmployeeNumber { get; set; }
         public required string Name { get; set; }
         public required string Department { get; set; }
+        public required string Role { get; set; }
     }
 }

@@ -43,7 +43,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role
                 }; 
                 
                 return response;
@@ -112,7 +113,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role,
                 }).ToList();
             }
             catch (Exception ex)
@@ -122,7 +124,7 @@ namespace LotTrace_MES.src.Application.Service
             }
         }
 
-        public async Task<ResponseWorkerDTO?> GetWorkerByEmployeeNumberAsync(int employeeNumber)
+        public async Task<ResponseWorkerDTO?> GetWorkerByEmployeeNumberAsync(string employeeNumber)
         {
             try
             {
@@ -138,7 +140,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role,
                 };
 
                 return response;
@@ -167,7 +170,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role
                 };
 
                 return response;
@@ -196,7 +200,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role
                 };
 
                 return response;
@@ -219,7 +224,8 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerId = worker.WorkerId,
                     EmployeeNumber = worker.EmployeeNumber,
                     WorkerName = worker.WorkerName,
-                    Department = worker.Department
+                    Department = worker.Department,
+                    Role = worker.Role
                 }).ToList();
             }
             catch (Exception ex)

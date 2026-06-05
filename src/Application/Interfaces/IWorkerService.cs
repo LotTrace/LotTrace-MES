@@ -11,7 +11,7 @@ namespace LotTrace_MES.src.Application.Interfaces
         Task<IEnumerable<ResponseWorkerDTO>> GetWorkersByDepartmentAsync(string department); // 부서별 작업자 조회
         Task<ResponseWorkerDTO?> GetWorkerByNameAsync(string name); // 이름으로 작업자 조회
         Task<ResponseWorkerDTO?> GetWorkerByIdAsync(int workerId); // ID로 작업자 조회
-        Task<ResponseWorkerDTO?> GetWorkerByEmployeeNumberAsync(int employeeNumber); // 사번으로 작업자 조회
+        Task<ResponseWorkerDTO?> GetWorkerByEmployeeNumberAsync(string employeeNumber); // 사번으로 작업자 조회
         Task<ResponseWorkerDTO?> CreateWorkerAsync(RequestWorkerDTO createRequestWorkerDTO); // 작업자 생성
     }
 }
