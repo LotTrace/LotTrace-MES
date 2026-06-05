@@ -1,6 +1,6 @@
 ﻿using LotTrace_MES.src.Application.DTO.Response.Material;
 using LotTrace_MES.src.Domain.Interfaces;
-using LotTrace_MES.src.Domain.Services;
+using LotTrace_MES.src.Application.Interfaces;
 
 namespace LotTrace_MES.src.Application.Service
 {
