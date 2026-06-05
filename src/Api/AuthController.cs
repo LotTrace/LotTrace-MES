@@ -28,11 +28,11 @@ namespace LotTrace_MES.src.Api
         [HttpPost("login")]
         public async Task<ActionResult<ResponseAuthDTO>> Login([FromBody] LoginRequestDTO loginRequestDTO)
         {
-            var worker = await _workerService.GetWorkerByEmployeeNumberAsync(loginRequestDTO.EmployeeNumber);
+            var worker = await _workerService.VerifyWorkerAsync(loginRequestDTO.EmployeeNumber, loginRequestDTO.password);
 
             if (worker == null)
             {
-                return Unauthorized(new ResponseAuthDTO { Success = false, Message = "등록되지 않은 작업자 사번입니다." });
+                return Unauthorized(new ResponseAuthDTO { Success = false, Message = "사번 또는 비밀번호가 일치하지 않습니다." });
             }
 
             var accessToken = GenerateJwtToken(worker.Role, worker.EmployeeNumber);

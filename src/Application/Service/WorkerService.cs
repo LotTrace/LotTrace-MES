@@ -32,7 +32,9 @@ namespace LotTrace_MES.src.Application.Service
                 {
                     EmployeeNumber = createRequestWorkerDTO.EmployeeNumber,
                     WorkerName = createRequestWorkerDTO.Name,
-                    Department = createRequestWorkerDTO.Department
+                    Department = createRequestWorkerDTO.Department,
+                    Role = createRequestWorkerDTO.Role,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(createRequestWorkerDTO.Password ?? "1234") // 기본값 1234
                 };
 
                 await _workerRepository.AddAsync(worker);
@@ -91,6 +93,12 @@ namespace LotTrace_MES.src.Application.Service
                 }
                 worker.WorkerName = RequestDTO.Name ?? worker.WorkerName;
                 worker.Department = RequestDTO.Department ?? worker.Department;
+                worker.Role = RequestDTO.Role ?? worker.Role;
+
+                if (!string.IsNullOrEmpty(RequestDTO.Password))
+                {
+                    worker.PasswordHash = BCrypt.Net.BCrypt.HashPassword(RequestDTO.Password);
+                }
 
                 _workerRepository.Updated(worker);
                 await _workerRepository.SaveChangesAsync();
@@ -233,6 +241,24 @@ namespace LotTrace_MES.src.Application.Service
                 _logger.LogError(ex, "Error retrieving workers in Department: {Department}", department);
                 return Enumerable.Empty<ResponseWorkerDTO>();
             }
+        }
+
+        public async Task<ResponseWorkerDTO?> VerifyWorkerAsync(string employeeNumber, string password)
+        {
+            var worker = await _workerRepository.GetByEmployeeNumberAsync(employeeNumber);
+            if (worker == null || !BCrypt.Net.BCrypt.Verify(password, worker.PasswordHash))
+            {
+                return null;
+            }
+
+            return new ResponseWorkerDTO
+            {
+                WorkerId = worker.WorkerId,
+                EmployeeNumber = worker.EmployeeNumber,
+                WorkerName = worker.WorkerName,
+                Department = worker.Department,
+                Role = worker.Role
+            };
         }
     }
 }
