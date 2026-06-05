@@ -23,6 +23,8 @@ namespace LotTrace_MES
             builder.Services.AddScoped<ILotRepository, LotRepository>();
             builder.Services.AddScoped<ILogHistoriesRepository, LogHistoriesRepository>();
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IMaterialRepository, MaterialRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
             // Service DI 등록
             builder.Services.AddScoped<ILineService, LineService>();

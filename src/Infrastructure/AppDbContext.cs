@@ -16,6 +16,8 @@ namespace LotTrace_MES.src.Infrastructure
         public DbSet<LogHistories> LogHistories { get; set; }
         public DbSet<Line> Lines { get; set; }
         public DbSet<LotStateTransition> LotStateTransitions { get; set; }
+        public DbSet<Material> Materials { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -41,6 +43,29 @@ namespace LotTrace_MES.src.Infrastructure
                 .WithMany()
                 .HasForeignKey(l => l.WorkerId)
                 .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Lot>()
+                .HasOne(l => l.Material)
+                .WithMany()
+                .HasForeignKey(l => l.MaterialId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Lot>()
+                .HasOne(l => l.Order)
+                .WithMany()
+                .HasForeignKey(l => l.OrderId)
+                .OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Product)
+                .WithMany()
+                .HasForeignKey(o => o.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Lot>()
+                .HasOne(l => l.ParentLot)
+                .WithMany()
+                .HasForeignKey(l => l.ParentLotId)
+                .OnDelete(DeleteBehavior.Restrict);
+
         }
     }
 }
