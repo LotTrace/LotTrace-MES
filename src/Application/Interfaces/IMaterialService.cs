@@ -1,7 +1,6 @@
 ﻿using LotTrace_MES.src.Application.DTO.Response.Material;
-using LotTrace_MES.src.Domain.Entity;
 
-namespace LotTrace_MES.src.Domain.Services
+namespace LotTrace_MES.src.Application.Interfaces
 {
     public interface IMaterialService
     {

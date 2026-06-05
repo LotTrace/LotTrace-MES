@@ -152,7 +152,7 @@ namespace LotTrace_MES.src.Application.Service
                     return false;
                 }
 
-                if(order.OrderStatus != "Pending")
+                if(order.OrderStatus != "Pending" || order.OrderStatus != "Created")
                 {
                     _logger.LogWarning($"Order with ID {orderId} cannot be started because it is in '{order.OrderStatus}' status.");
                     return false;

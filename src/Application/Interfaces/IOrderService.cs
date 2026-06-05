@@ -1,6 +1,5 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Order;
 using LotTrace_MES.src.Application.DTO.Response.Order;
-using LotTrace_MES.src.Domain.Entity;
 
 namespace LotTrace_MES.src.Application.Interfaces
 {

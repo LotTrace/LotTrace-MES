@@ -16,12 +16,12 @@ namespace LotTrace_MES.src.Application.Service
         private readonly IMaterialRepository _materialRepository;
         private readonly ILogger<LotService> _logger;
 
-        public LotService(ILotRepository lotRepository, ILogHistoriesRepository logHistoriesRepository, IProductRepository productRepository, IOrderRepository OrderRepository, IMaterialRepository materialRepository, ILogger<LotService> logger)
+        public LotService(ILotRepository lotRepository, ILogHistoriesRepository logHistoriesRepository, IProductRepository productRepository, IOrderRepository orderRepository, IMaterialRepository materialRepository, ILogger<LotService> logger)
         {
             _lotRepository = lotRepository;
             _logHistoriesRepository = logHistoriesRepository;
             _productRepository = productRepository;
-            _orderRepository = OrderRepository;
+            _orderRepository = orderRepository;
             _materialRepository = materialRepository;
             _logger = logger;
         }
@@ -36,11 +36,14 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,                              
+                    OrderId = lot.OrderId,
                     MaterialName = lot.Material?.Name ?? "Unknown",
+                    Quantity = lot.Quantity,
+                    StartQty = lot.StartQty,
+                    CurrentLocation = lot.CurrentLocation,
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt
-                }).ToList();
+                });
 
                 return response;
             }
@@ -83,7 +86,10 @@ namespace LotTrace_MES.src.Application.Service
                     OrderId = lot.OrderId,                            
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt
+                    CreatedAt = lot.CreatedAt,
+                    Quantity = lot.Quantity,
+                    StartQty = lot.StartQty,
+                    CurrentLocation = lot.CurrentLocation,
                 };
                 return response;
             }
@@ -112,7 +118,10 @@ namespace LotTrace_MES.src.Application.Service
                     OrderId = lot.OrderId,                          
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt
+                    CreatedAt = lot.CreatedAt,
+                    Quantity = lot.Quantity,
+                    StartQty = lot.StartQty,
+                    CurrentLocation = lot.CurrentLocation,
                 };
                 return response;
             }
@@ -216,8 +225,6 @@ namespace LotTrace_MES.src.Application.Service
 
                 await _lotRepository.AddAsync(newLot);
                 await _lotRepository.SaveChangesAsync();
-                await _materialRepository.SaveChangesAsync();
-                await _orderRepository.SaveChangesAsync();
 
                 _logger.LogInformation($"[MES Chain Success] Lot {createDTO.Barcode} created. Material {material.Name} deducted. Order {createDTO.OrderId} progress updated.");
                 return await GetLotByBarcodeAsync(newLot.Barcode);
@@ -225,7 +232,7 @@ namespace LotTrace_MES.src.Application.Service
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error creating lot with barcode {Barcode}.", createDTO.Barcode);
-                throw;
+                return null;
             }
         }
 
@@ -311,7 +318,10 @@ namespace LotTrace_MES.src.Application.Service
                     OrderId = lot.OrderId,                           
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt
+                    CreatedAt = lot.CreatedAt,
+                    Quantity = lot.Quantity,
+                    StartQty = lot.StartQty,
+                    CurrentLocation = lot.CurrentLocation,
                 }).ToList();
 
                 return response;
@@ -337,7 +347,10 @@ namespace LotTrace_MES.src.Application.Service
                     OrderId = lot.OrderId,                             
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
-                    CreatedAt = lot.CreatedAt
+                    CreatedAt = lot.CreatedAt,
+                    Quantity = lot.Quantity,
+                    StartQty = lot.StartQty,
+                    CurrentLocation = lot.CurrentLocation,
                 }).ToList();
                 return response;
             }

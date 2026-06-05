@@ -7,6 +7,9 @@ namespace LotTrace_MES.src.Infrastructure.Persistence.Repositories
 {
     public class OrderRepository : GenericRepository<Order>, IOrderRepository
     {
+        private IQueryable<Order> OrderSet => _context.Orders
+            .Include(o => o.Product);
+
         public OrderRepository(AppDbContext context) : base(context)
         {
         }

@@ -148,6 +148,7 @@ namespace LotTrace_MES.src.Application.Service
                 }
 
                 material.Stock += quantity;
+                await _materialRepository.SaveChangesAsync();
                 return true;
             }
             catch (Exception ex)
