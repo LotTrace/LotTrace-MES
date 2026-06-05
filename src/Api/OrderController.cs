@@ -1,10 +1,12 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Order;
 using LotTrace_MES.src.Application.DTO.Response.Order;
 using LotTrace_MES.src.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LotTrace_MES.src.Api
 {
+    [Authorize]
     [Route("api/order")]
     [ApiController]
     public class OrderController : ControllerBase

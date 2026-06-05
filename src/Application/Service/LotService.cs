@@ -1,4 +1,4 @@
-﻿using LotTrace_MES.src.Application.DTO.Request.Lot;
+using LotTrace_MES.src.Application.DTO.Request.Lot;
 using LotTrace_MES.src.Application.DTO.Response.Lot;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
@@ -36,7 +36,7 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,
+                    OrderId = lot.OrderId ?? 0,
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     Quantity = lot.Quantity,
                     StartQty = lot.StartQty,
@@ -73,9 +73,9 @@ namespace LotTrace_MES.src.Application.Service
                 }
 
                 var material = lot.Material;
-                if (material == null)
+                if (material == null && lot.MaterialId.HasValue)
                 {
-                    material = await _materialRepository.GetByIdAsync(lot.MaterialId);
+                    material = await _materialRepository.GetByIdAsync(lot.MaterialId.Value);
                 }
 
                 var response = new ResponseLotDTO
@@ -83,8 +83,8 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,                            
-                    MaterialName = lot.Material?.Name ?? "Unknown",
+                    OrderId = lot.OrderId ?? 0,                            
+                    MaterialName = material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt,
                     Quantity = lot.Quantity,
@@ -115,7 +115,7 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,                          
+                    OrderId = lot.OrderId ?? 0,                          
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt,
@@ -315,7 +315,7 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,                           
+                    OrderId = lot.OrderId ?? 0,                           
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt,
@@ -344,7 +344,7 @@ namespace LotTrace_MES.src.Application.Service
                     LotId = lot.LotId,
                     Barcode = lot.Barcode,
                     ProductName = lot.Product?.ProductName ?? "Unknown",
-                    OrderId = lot.OrderId,                             
+                    OrderId = lot.OrderId ?? 0,                             
                     MaterialName = lot.Material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt,

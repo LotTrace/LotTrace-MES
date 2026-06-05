@@ -6,7 +6,7 @@ using LotTrace_MES.src.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi; // .NET 10 규격: Models 제거
+using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
 

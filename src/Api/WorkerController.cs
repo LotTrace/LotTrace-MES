@@ -1,10 +1,12 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Worker;
 using LotTrace_MES.src.Application.DTO.Response.Worker;
 using LotTrace_MES.src.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LotTrace_MES.src.Api
 {
+    [Authorize]
     [Route("api/worker")]
     [ApiController]
     public class WorkerController : ControllerBase
@@ -42,7 +44,7 @@ namespace LotTrace_MES.src.Api
         }
 
         [HttpGet("employee_number/{employeeNumber}")]
-        public async Task<ActionResult<ResponseWorkerDTO>> GetWorkerByEmployeeNumber(int employeeNumber)
+        public async Task<ActionResult<ResponseWorkerDTO>> GetWorkerByEmployeeNumber(string employeeNumber)
         {
             var worker = await _workerService.GetWorkerByEmployeeNumberAsync(employeeNumber);
             if (worker == null)

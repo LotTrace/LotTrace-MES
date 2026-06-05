@@ -2,6 +2,8 @@ using LotTrace_MES.src.Application.DTO.Request.Auth;
 using LotTrace_MES.src.Application.DTO.Response.Auth;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
+using LotTrace_MES.src.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,12 +16,13 @@ namespace LotTrace_MES.src.Application.Service
     {
         private readonly IConfiguration _configuration;
         private readonly IWorkerService _workerService;
-        private static readonly Dictionary<string, Auth> _authDbMock = new Dictionary<string, Auth>();
+        private readonly AppDbContext _context;
 
-        public AuthService(IConfiguration configuration, IWorkerService workerService)
+        public AuthService(IConfiguration configuration, IWorkerService workerService, AppDbContext context)
         {
             _configuration = configuration;
             _workerService = workerService;
+            _context = context;
         }
 
         public async Task<ResponseAuthDTO?> LoginAsync(LoginRequestDTO loginRequestDTO)
@@ -29,34 +32,35 @@ namespace LotTrace_MES.src.Application.Service
             if (worker == null) return null;
 
             var accessToken = GenerateJwtToken(worker.Role, worker.EmployeeNumber);
-            var refreshToken = GenerateRefreshToken();
+            var refreshTokenValue = GenerateRefreshToken();
 
             var expiryMinutes = Convert.ToInt32(_configuration["Jwt:ExpireMinutes"]);
             var refreshDays = Convert.ToInt32(_configuration["Jwt:RefreshExpiryDays"]);
             DateTime accessExpiryTime = DateTime.UtcNow.AddMinutes(expiryMinutes);
             DateTime refreshExpiryTime = DateTime.UtcNow.AddDays(refreshDays);
 
-            var authEntity = new Auth
+            // 기존 리프레시 토큰 무효화 (옵션: 보안 강화)
+            var existingTokens = _context.RefreshTokens.Where(t => t.EmployeeNumber == worker.EmployeeNumber && !t.IsRevoked);
+            foreach (var t in existingTokens) t.IsRevoked = true;
+
+            var refreshTokenEntity = new RefreshToken
             {
-                Success = true,
-                Token = accessToken,
-                RefreshToken = refreshToken,
-                WorkerName = worker.WorkerName,
-                Message = $"{worker.WorkerName}님 ({worker.Role})",
-                AccessTimeExpiration = accessExpiryTime,
-                RefreshTokenExpiration = refreshExpiryTime,
+                Token = refreshTokenValue,
+                EmployeeNumber = worker.EmployeeNumber,
+                ExpiryDate = refreshExpiryTime
             };
 
-            _authDbMock[worker.EmployeeNumber] = authEntity;
+            _context.RefreshTokens.Add(refreshTokenEntity);
+            await _context.SaveChangesAsync();
 
             return new ResponseAuthDTO
             {
-                Success = authEntity.Success,
-                Token = authEntity.Token,
-                RefreshToken = authEntity.RefreshToken,
+                Success = true,
+                Token = accessToken,
+                RefreshToken = refreshTokenValue,
                 EmployeeNumber = worker.EmployeeNumber,
-                Message = authEntity.Message,
-                AccessTimeExpiration = authEntity.AccessTimeExpiration,
+                Message = $"{worker.WorkerName}님 ({worker.Role})",
+                AccessTimeExpiration = accessExpiryTime,
                 RefreshTokenExpiration = refreshExpiryTime,
             };
         }
@@ -72,12 +76,12 @@ namespace LotTrace_MES.src.Application.Service
             var worker = await _workerService.GetWorkerByEmployeeNumberAsync(employeeNumber);
             if (worker == null) return null;
 
-            if (!_authDbMock.TryGetValue(employeeNumber, out var savedAuth) || savedAuth.RefreshToken != requestRefreshTokenDTO.RefreshToken)
-            {
-                return null;
-            }
+            var savedAuth = await _context.RefreshTokens
+                .FirstOrDefaultAsync(t => t.Token == requestRefreshTokenDTO.RefreshToken && t.EmployeeNumber == employeeNumber && !t.IsRevoked);
 
-            if (savedAuth.RefreshTokenExpiration < DateTime.UtcNow)
+            if (savedAuth == null) return null;
+
+            if (savedAuth.ExpiryDate < DateTime.UtcNow)
             {
                 return new ResponseAuthDTO { Success = false, Message = "리프레시 토큰이 만료되었습니다." };
             }
@@ -86,17 +90,14 @@ namespace LotTrace_MES.src.Application.Service
             var newExpiryMinutes = Convert.ToInt32(_configuration["Jwt:ExpireMinutes"]);
             DateTime accessExpiryTime = DateTime.UtcNow.AddMinutes(newExpiryMinutes);
 
-            savedAuth.Token = newAccessToken;
-            savedAuth.AccessTimeExpiration = accessExpiryTime;
-
             return new ResponseAuthDTO
             {
                 Success = true,
-                Token = savedAuth.Token,
-                RefreshToken = savedAuth.RefreshToken,
+                Token = newAccessToken,
+                RefreshToken = savedAuth.Token,
                 EmployeeNumber = worker.EmployeeNumber,
                 Message = $"{worker.WorkerName}님 세션 연장 성공",
-                AccessTimeExpiration = savedAuth.AccessTimeExpiration
+                AccessTimeExpiration = accessExpiryTime
             };
         }
 
@@ -134,10 +135,11 @@ namespace LotTrace_MES.src.Application.Service
 
         private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
+            var keyString = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is not configured.");
             var tokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration["Jwt:Key"])),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(keyString)),
                 ValidateIssuer = true,
                 ValidIssuer = _configuration["Jwt:Issuer"],
                 ValidateAudience = true,

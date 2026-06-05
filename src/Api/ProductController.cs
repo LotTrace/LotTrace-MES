@@ -1,10 +1,12 @@
 ﻿using LotTrace_MES.src.Application.DTO.Request.Product;
 using LotTrace_MES.src.Application.DTO.Response.Product;
 using LotTrace_MES.src.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LotTrace_MES.src.Api
 {
+    [Authorize]
     [Route("api/product")]
     [ApiController]
     public class ProductController : ControllerBase
