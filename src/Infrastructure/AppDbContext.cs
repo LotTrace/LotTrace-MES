@@ -18,6 +18,7 @@ namespace LotTrace_MES.src.Infrastructure
         public DbSet<LotStateTransition> LotStateTransitions { get; set; }
         public DbSet<Material> Materials { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -1,10 +1,12 @@
 ﻿
 using LotTrace_MES.src.Application.DTO.Response.Material;
 using LotTrace_MES.src.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LotTrace_MES.src.Api
 {
+    [Authorize]
     [Route("api/material")]
     [ApiController]
     public class MaterialController : ControllerBase

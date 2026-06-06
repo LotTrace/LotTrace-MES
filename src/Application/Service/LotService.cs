@@ -1,4 +1,4 @@
-﻿using LotTrace_MES.src.Application.DTO.Request.Lot;
+using LotTrace_MES.src.Application.DTO.Request.Lot;
 using LotTrace_MES.src.Application.DTO.Response.Lot;
 using LotTrace_MES.src.Application.Interfaces;
 using LotTrace_MES.src.Domain.Entity;
@@ -84,7 +84,7 @@ namespace LotTrace_MES.src.Application.Service
                     Barcode = lot.Barcode,
                     ProductName = product?.ProductName ?? "Unknown",
                     OrderId = lot.OrderId,                            
-                    MaterialName = lot.Material?.Name ?? "Unknown",
+                    MaterialName = material?.Name ?? "Unknown",
                     CurrentState = lot.CurrentState,
                     CreatedAt = lot.CreatedAt,
                     Quantity = lot.Quantity,

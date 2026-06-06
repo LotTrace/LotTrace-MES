@@ -1,9 +1,11 @@
 ﻿using LotTrace_MES.src.Application.DTO.Response.LogHistories;
 using LotTrace_MES.src.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LotTrace_MES.src.Api
 {
+    [Authorize]
     [Route("api/log")]
     [ApiController]
     public class LogHistoriesController : ControllerBase
