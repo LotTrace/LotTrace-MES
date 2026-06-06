@@ -34,7 +34,7 @@ namespace LotTrace_MES.src.Application.Service
                     WorkerName = createRequestWorkerDTO.Name,
                     Department = createRequestWorkerDTO.Department,
                     Role = createRequestWorkerDTO.Role,
-                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(createRequestWorkerDTO.Password ?? "1234") // 기본값 1234
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(createRequestWorkerDTO.Password)
                 };
 
                 await _workerRepository.AddAsync(worker);

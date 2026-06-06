@@ -65,6 +65,7 @@ namespace LotTrace_MES.src.Api
             return Ok(worker);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult<ResponseWorkerDTO>> CreateWorker([FromBody] RequestWorkerDTO createRequestWorkerDTO)
         {

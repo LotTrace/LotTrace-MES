@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LotTrace_MES.src.Api
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/auth")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;
@@ -17,7 +17,7 @@ namespace LotTrace_MES.src.Api
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<ResponseAuthDTO>> Login([FromBody] LoginRequestDTO loginRequestDTO)
+        public async Task<ActionResult<ResponseAuthDTO>> Login([FromBody] RequestLoginDTO loginRequestDTO)
         {
             var result = await _authService.LoginAsync(loginRequestDTO);
 
@@ -36,7 +36,7 @@ namespace LotTrace_MES.src.Api
 
             if (result == null)
             {
-                return BadRequest(new { Message = "유효하지 않은 토큰이거나 정보가 일치하지 않습니다." });
+                return BadRequest(new { Success = false, Message = "유효하지 않은 토큰이거나 정보가 일치하지 않습니다." });
             }
 
             if (!result.Success)

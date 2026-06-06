@@ -3,6 +3,6 @@
     public class LoginRequestDTO
     {
         public required string EmployeeNumber { get; set; }
-        public required string password { get; set; }
+        public required string Password { get; set; }
     }
 }

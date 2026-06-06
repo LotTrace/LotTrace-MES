@@ -35,7 +35,7 @@ namespace LotTrace_MES.Migrations
                 table: "Workers",
                 type: "nvarchar(max)",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: "Operator");
 
             migrationBuilder.AlterColumn<string>(
                 name: "ProductName",

@@ -5,7 +5,7 @@ namespace LotTrace_MES.src.Application.Interfaces
 {
     public interface IAuthService
     {
-        Task<ResponseAuthDTO?> LoginAsync(LoginRequestDTO loginRequestDTO);
+        Task<ResponseAuthDTO?> LoginAsync(RequestLoginDTO loginRequestDTO);
         Task<ResponseAuthDTO?> RefreshAsync(RequestRefreshTokenDTO requestRefreshTokenDTO);
     }
 }

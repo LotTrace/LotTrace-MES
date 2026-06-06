@@ -6,7 +6,6 @@ using LotTrace_MES.src.Infrastructure.Persistence.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
 using Scalar.AspNetCore;
 using System.Text;
 
@@ -22,11 +21,20 @@ namespace LotTrace_MES
             // JWT 인증 설정 (서버 보안 로직은 그대로 유지)
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var keyString = jwtSettings["Key"];
+            var issuer = jwtSettings["Issuer"];
+            var audience = jwtSettings["Audience"];
 
             if (string.IsNullOrEmpty(keyString))
             {
                 throw new InvalidOperationException("Fatal Error: JWT signing key is missing in configuration!");
             }
+
+            if (string.IsNullOrEmpty(issuer) || string.IsNullOrEmpty(audience))
+            {
+                throw new InvalidOperationException("Fatal Error: JWT issuer or audience is missing in configuration (appsettings.json)!");
+            }
+
+
             var key = Encoding.ASCII.GetBytes(keyString);
 
             builder.Services.AddAuthentication(options =>
@@ -50,6 +58,7 @@ namespace LotTrace_MES
                     ClockSkew = TimeSpan.Zero
                 };
             });
+            builder.Services.AddAuthorization();
 
             // DB 설정
             builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -71,6 +80,8 @@ namespace LotTrace_MES
             builder.Services.AddScoped<ILogHistoriesService, LogHistoriesService>();
             builder.Services.AddScoped<ILotService, LotService>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<IMaterialService, MaterialService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             builder.Services.AddOpenApi(options =>
             {

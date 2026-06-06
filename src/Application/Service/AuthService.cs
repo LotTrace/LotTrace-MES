@@ -25,14 +25,14 @@ namespace LotTrace_MES.src.Application.Service
             _context = context;
         }
 
-        public async Task<ResponseAuthDTO?> LoginAsync(LoginRequestDTO loginRequestDTO)
+        public async Task<ResponseAuthDTO?> LoginAsync(RequestLoginDTO requestLoginDTO)
         {
-            var worker = await _workerService.VerifyWorkerAsync(loginRequestDTO.EmployeeNumber, loginRequestDTO.password);
+            var worker = await _workerService.VerifyWorkerAsync(requestLoginDTO.EmployeeNumber, requestLoginDTO.Password);
 
             if (worker == null) return null;
 
             var accessToken = GenerateJwtToken(worker.Role, worker.EmployeeNumber);
-            var refreshTokenValue = GenerateRefreshToken();
+            var rawRefreshToken = GenerateRefreshToken();
 
             var expiryMinutes = Convert.ToInt32(_configuration["Jwt:ExpireMinutes"]);
             var refreshDays = Convert.ToInt32(_configuration["Jwt:RefreshExpiryDays"]);
@@ -40,12 +40,16 @@ namespace LotTrace_MES.src.Application.Service
             DateTime refreshExpiryTime = DateTime.UtcNow.AddDays(refreshDays);
 
             // 기존 리프레시 토큰 무효화 (옵션: 보안 강화)
-            var existingTokens = _context.RefreshTokens.Where(t => t.EmployeeNumber == worker.EmployeeNumber && !t.IsRevoked);
+            var existingTokens = await _context.RefreshTokens
+                .Where(t => t.EmployeeNumber == worker.EmployeeNumber && !t.IsRevoked)
+                .ToListAsync();
             foreach (var t in existingTokens) t.IsRevoked = true;
+
+            var hashedRefreshToken = ComputeSha256Hash(rawRefreshToken);
 
             var refreshTokenEntity = new RefreshToken
             {
-                Token = refreshTokenValue,
+                Token = hashedRefreshToken,
                 EmployeeNumber = worker.EmployeeNumber,
                 ExpiryDate = refreshExpiryTime
             };
@@ -57,7 +61,7 @@ namespace LotTrace_MES.src.Application.Service
             {
                 Success = true,
                 Token = accessToken,
-                RefreshToken = refreshTokenValue,
+                RefreshToken = rawRefreshToken,
                 EmployeeNumber = worker.EmployeeNumber,
                 Message = $"{worker.WorkerName}님 ({worker.Role})",
                 AccessTimeExpiration = accessExpiryTime,
@@ -76,8 +80,10 @@ namespace LotTrace_MES.src.Application.Service
             var worker = await _workerService.GetWorkerByEmployeeNumberAsync(employeeNumber);
             if (worker == null) return null;
 
+            var incomingHashedToken = ComputeSha256Hash(requestRefreshTokenDTO.RefreshToken);
+
             var savedAuth = await _context.RefreshTokens
-                .FirstOrDefaultAsync(t => t.Token == requestRefreshTokenDTO.RefreshToken && t.EmployeeNumber == employeeNumber && !t.IsRevoked);
+                .FirstOrDefaultAsync(t => t.Token == incomingHashedToken && t.EmployeeNumber == employeeNumber && !t.IsRevoked);
 
             if (savedAuth == null) return null;
 
@@ -94,11 +100,20 @@ namespace LotTrace_MES.src.Application.Service
             {
                 Success = true,
                 Token = newAccessToken,
-                RefreshToken = savedAuth.Token,
+                RefreshToken = requestRefreshTokenDTO.RefreshToken,
                 EmployeeNumber = worker.EmployeeNumber,
                 Message = $"{worker.WorkerName}님 세션 연장 성공",
                 AccessTimeExpiration = accessExpiryTime
             };
+        }
+
+        private string ComputeSha256Hash(string rawData)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(rawData));
+                return Convert.ToBase64String(bytes);
+            }
         }
 
         private string GenerateJwtToken(string role, string employeeNumber)
